@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for
 import databases
+import bcrypt
 app = Flask(__name__)
 
 
@@ -37,16 +38,20 @@ def home():
 # ---TABLE CREATIONS---
 
 # --- USERS ---
+
 connection = databases.connect("users.db")
-databases.create_table(connection, "users", ["uid INTEGER PRIMARY KEY AUTOINCREMENT", "name TEXT", "email TEXT", "password TEXT"])
+databases.create_table(connection, "users", ["uid INTEGER PRIMARY KEY AUTOINCREMENT", "name TEXT", "email TEXT", "password TEXT", "role INTEGER"])
 
 
 # --- COURSES ---
+
 databases.create_table(connection, "courses", ["cid INTEGER PRIMARY KEY AUTOINCREMENT", "cname TEXT", "description TEXT", "course_image TEXT"])
-databases.create_table(connection, "course_users", ["cid INTEGER", "uid INTEGER"])
+databases.create_table(connection, "course_users", ["cid INTEGER FOREIGN KEY REFERENCES courses(cid)", "uid INTEGER FOREIGN KEY REFERENCES users(uid)", "CUID INTEGER PRIMARY KEY AUTOINCREMENT"])
+
 
 # --- Testing ---
-databases.create_user(connection, "test", "test@test.com", "test")
+
+databases.create_user(connection, "test", "test@test.com", "test", "1")
 uid = databases.get_user(connection, "test@test.com")
 print(uid)
 

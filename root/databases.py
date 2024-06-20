@@ -16,19 +16,19 @@ def print_database(conn):
         print(row[0])
     conn.close()
 
-def create_user(conn, name, email, password):
+def create_user(conn, name, email, password, role):
     c = conn.cursor()
     password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-    c.execute("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", (name, email, password))
+    c.execute("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)", (name, email, password, role))
 
 def delete_user(conn, email):
     c = conn.cursor()
     c.execute("DELETE FROM users WHERE email = ?", (email,))
 
-def get_user(conn, email):  # returns uid
+def get_user(conn, email):
     c = conn.cursor()
     c.execute("SELECT uid FROM users WHERE email = ?", (email,))
-    return c.fetchone()[0]
+    return c.fetchall()[0][0]
 
 def change_password(conn, email, new_password):
     c = conn.cursor()
