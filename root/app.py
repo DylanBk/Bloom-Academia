@@ -47,7 +47,7 @@ def create_course():
         with db.connect("root/instance/users.db") as c:
             db.upload_course(c, course_title, course_description, course_image)
 
-        return redirect(url_for('success')) # !!! replace with success for course creation !!!
+        return redirect(url_for('success', message="Course Uploaded successfully!")) # !!! replace with success for course creation !!!
     else:
         return render_template('createcourse.html')
 
@@ -62,7 +62,7 @@ def create_user():
         with db.connect("root/instance/users.db") as c:
             db.create_user(c, name, email, password, role="1")  # create user in database
 
-        return redirect(url_for('success'))  # Redirect to a success page
+        return redirect(url_for('success', message="User created successfully!"))  # Redirect to a success page
     else:
         return render_template('createuser.html')  # Show the form on GET
 
@@ -105,8 +105,8 @@ def login():
 # --- SUCCESS ROUTE ---
 @app.route('/success')
 def success():
-    return render_template('success.html') 
-
+    message = request.args.get('message', 'Success!')  # Get message, default to "Success!"
+    return render_template('success.html', message=message)
 
 # --- CREATE DATABASES ---
 db.create()
