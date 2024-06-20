@@ -35,10 +35,21 @@ def home():
     return render_template('index.html')
 
 
+
 # --- CREATE COURSE ---
-@app.route('/createcourse')
+@app.route('/createcourse', methods=['GET', 'POST'])
 def create_course():
-    pass
+    if request.form == 'POST':
+        course_title = request.form['course-title']
+        course_description = request.form['course-description']
+        course_image = request.form['course-img']
+
+        with db.connect("root/instance/users.db") as c:
+            db.upload_course(c, course_title, course_description, course_image)
+
+        return redirect(url_for('success')) # !!! replace with success for course creation !!!
+    else:
+        return render_template('createcourse.html')
 
 # --- CREATE USER ROUTE ---
 @app.route('/createuser', methods=['GET', 'POST'])
@@ -55,6 +66,7 @@ def create_user():
     else:
         return render_template('createuser.html')  # Show the form on GET
 
+
 # --- SEARCH USER ROUTE ---
 @app.route('/searchuser', methods=['GET', 'POST'])
 def search_user():
@@ -69,6 +81,7 @@ def search_user():
             return render_template('user_results.html', message="User not found")
     else:
         return render_template('searchuser.html')
+
 
 # --- LOGIN ROUTE ---
 @app.route('/login', methods=['GET', 'POST'])
@@ -88,14 +101,16 @@ def login():
     else:
         return render_template('login.html')
 
+
 # --- SUCCESS ROUTE ---
 @app.route('/success')
 def success():
-    return render_template('success.html')  # Create a success template (success.html)
+    return render_template('success.html') 
 
 
-# --- database creation ---
+# --- CREATE DATABASES ---
 db.create()
+
 
 # --- MAIN ---
 

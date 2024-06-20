@@ -68,6 +68,19 @@ def change_name(conn, new_name, email):
     c.execute("UPDATE users SET name = ? WHERE email = ?", (new_name, email))
     return c.rowcount
 
+# --- COURSE FUNCTIONS ---
+def upload_course(conn, course_title, course_description, course_image):
+    c = conn.cursor()
+    c.execute("INSERT INTO courses (cname, description, course_image) VALUES (?, ?, ?)", (course_title, course_description, course_image))
+    return c.lastrowid
+
+def delete_course(conn, cid, course_title, course_description):
+    c = conn.cursor()
+    c.execute("DELETE FROM courses WHERE cid = ? AND cname = ? AND description = ?", (cid, course_title, course_description))
+    return c.rowcount
+    
+
+
 # --- USER DATABASE CREATION FUNCTION ---
 def create():
     db_path = "root/instance/users.db"
@@ -78,7 +91,7 @@ def create():
         print("Creating database...")
         # -- CONNECTION -- (CONNECT TO DATABASE)
         connection = connect(db_path)
-
+        print("checkpoint")
         # -- PRAGMA -- (ENABLE FOREIGN KEYS)
         connection.execute("PRAGMA foreign_keys = ON;") 
 
@@ -89,5 +102,5 @@ def create():
         create_table(connection, "course_users", ["cid INTEGER REFERENCES courses(cid)", "uid INTEGER REFERENCES users(uid)", "CUID INTEGER PRIMARY KEY AUTOINCREMENT"])
 
         # -- FINISH --
-        print("Databases created successfully.")
+        print("Database + tables created successfully.")
         connection.close()

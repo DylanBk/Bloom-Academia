@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Upload a Course</h2>
+    <form action="{{ url_for('create_course') }}" method="post">
+        <label for="course-title">Course Title: </label><input id="course-title" type="text" name="course-title">
+        <label for="course-description">Course Description: </label><input id="course-description" type="text" name="course-description">
+        <label for="course-img">Course Image: </label><input id="course-img" type="image" name="course-img"> <!-- upload image, add to site images and load with link on html-->
+        
+        <button type="submit">Upload Course</button>
+    </form>
+</body>
+</html>
