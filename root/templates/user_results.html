@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Results</title>
+    <style>
+        body { font-family: sans-serif; }
+        form { display: flex; flex-direction: column; width: 300px; margin: 0 auto; }
+        label { margin-top: 10px; }
+        input { padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; }
+        button { padding: 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    {% if user %}
+        <h2>User Found</h2>
+        <p>Name: {{ user[1] }}</p>
+        <p>Email: {{ user[2] }}</p>
+        <p>Role: {{ user[4] }}</p>
+        
+        <a href="{{ url_for('search_user') }}">Search Again</a>
+    {% elif message %}
+        <p>{{ message }}</p>
+        <a href="{{ url_for('search_user') }}">Search Again</a>
+    {% endif %}
+</body>
+</html>

@@ -1,6 +1,5 @@
-from flask import Flask, render_template, url_for
-import databases
-import bcrypt
+from flask import Flask, render_template, url_for, request, redirect
+import db_functions as db # import database functions
 app = Flask(__name__)
 
 
@@ -35,29 +34,51 @@ def home():
     return render_template('index.html')
 
 
-# ---TABLE CREATIONS---
+# --- CREATE COURSE ---
+@app.route('/createcourse')
+def create_course():
+    pass
 
-# --- USERS ---
+# --- CREATE USER ROUTE ---
+@app.route('/createuser', methods=['GET', 'POST'])
+def create_user():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        name = request.form['name']
 
-connection = databases.connect("users.db")
-databases.create_table(connection, "users", ["uid INTEGER PRIMARY KEY AUTOINCREMENT", "name TEXT", "email TEXT", "password TEXT", "role INTEGER"])
+        with db.connect("users.db") as c:
+            db.create_user(c, name, email, password, role="1")  # create user in database
+
+        return redirect(url_for('success'))  # Redirect to a success page
+    else:
+        return render_template('createuser.html')  # Show the form on GET
+
+# --- SEARCH USER ROUTE ---
+@app.route('/searchuser', methods=['GET', 'POST'])
+def search_user():
+    if request.method == 'POST':
+        email = request.form['email']
+        with db.connect("users.db") as c:
+            user = db.find_user(c, email)
+
+        if user:
+            return render_template('user_results.html', user=user)
+        else:
+            return render_template('user_results.html', message="User not found")
+    else:
+        return render_template('searchuser.html')
+
+# --- SUCCESS ROUTE ---
+@app.route('/success')
+def success():
+    return render_template('success.html')  # Create a success template (success.html)
 
 
-# --- COURSES ---
-
-databases.create_table(connection, "courses", ["cid INTEGER PRIMARY KEY AUTOINCREMENT", "cname TEXT", "description TEXT", "course_image TEXT"])
-databases.create_table(connection, "course_users", ["cid INTEGER FOREIGN KEY REFERENCES courses(cid)", "uid INTEGER FOREIGN KEY REFERENCES users(uid)", "CUID INTEGER PRIMARY KEY AUTOINCREMENT"])
-
-
-# --- Testing ---
-
-databases.create_user(connection, "test", "test@test.com", "test", "1")
-uid = databases.get_user(connection, "test@test.com")
-print(uid)
-
-print("Databases created successfully.")
-connection.close()
+# --- database creation ---
+db.create()
 
 # --- MAIN ---
+
 if __name__ == "__main__":
     app.run()

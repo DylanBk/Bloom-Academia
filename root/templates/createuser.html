@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create User</title>
+    <style>
+        body { font-family: sans-serif; }
+        form { display: flex; flex-direction: column; width: 300px; margin: 0 auto; }
+        label { margin-top: 10px; }
+        input { padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; }
+        button { padding: 10px; background-color: #4CAF50; color: white; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h2 style="text-align: center;">Create New User</h2>
+
+    <form method="POST" action="{{ url_for('create_user') }}">  
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <button type="submit">Create User</button>
+    </form>
+</body>
+</html>
