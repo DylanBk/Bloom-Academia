@@ -37,7 +37,6 @@ def home():
 # --- MAIN ---
 if __name__ == "__main__":
     app.run()
-<<<<<<< HEAD
     # ---TABLE CREATIONS---
         
     # --- USERS ---
@@ -53,4 +52,3 @@ if __name__ == "__main__":
     databases.print_table(connection, "users")
     databases.print_table(connection, "courses")
     databases.print_table(connection, "course_users")
-=======
