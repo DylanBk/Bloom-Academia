@@ -66,7 +66,7 @@ def upload_course(conn, course_title, course_description, course_image):
     c.execute("INSERT INTO courses (cname, description, course_image) VALUES (?, ?, ?)", (course_title, course_description, course_image))
     return c.lastrowid
 
-def delete_course(conn, cid, course_title, course_description):
+def delete_course(conn, cid):
     c = conn.cursor()
     c.execute("DELETE FROM courses WHERE cid = ? AND cname = ? AND description = ?", (cid, course_title, course_description))
     return c.rowcount
