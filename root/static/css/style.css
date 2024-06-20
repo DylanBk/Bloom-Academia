@@ -1,15 +1,54 @@
-* {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-}
-
-html {
-    height: 100%;
-    width: 100%;
-}
-
+/* style.css */
 body {
-    height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #222; /* Dark background */
+    color: #d6d6d6; /* Light text color for better contrast */
+}
+
+h1 {
+    color: #e0b0ff; /* Light purple for the header */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+text {
+    color: #d6d6d6; 
+}
+
+textarea {
     width: 100%;
+    height: 100px;
+    padding: 12px;
+    border: 1px solid #555; /* Darker border */
+    border-radius: 4px;
+    box-sizing: border-box;
+    resize: vertical;
+    background-color: #333; /* Darker background for text area */
+    color: #d6d6d6;
+}
+
+button {
+    background-color: #8a2be2; /* Purple button */
+    color: #fff; /* White text */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 10px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #6a00b3; /* Darker purple on hover */
+}
+
+a {
+    text-decoration: none;
+    color: #e0b0ff; /* Light purple links */
 }

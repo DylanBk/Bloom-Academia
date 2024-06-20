@@ -1,5 +1,6 @@
-from flask import Flask, render_template, url_for, request, redirect
-import db_functions as db # import database functions
+from modules import *
+
+
 app = Flask(__name__)
 
 
@@ -47,7 +48,7 @@ def create_user():
         password = request.form['password']
         name = request.form['name']
 
-        with db.connect("users.db") as c:
+        with db.connect("root/instance/users.db") as c:
             db.create_user(c, name, email, password, role="1")  # create user in database
 
         return redirect(url_for('success'))  # Redirect to a success page
@@ -59,7 +60,7 @@ def create_user():
 def search_user():
     if request.method == 'POST':
         email = request.form['email']
-        with db.connect("users.db") as c:
+        with db.connect("root/instance/users.db") as c:
             user = db.find_user(c, email)
 
         if user:

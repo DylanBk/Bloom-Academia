@@ -2,7 +2,6 @@ import sqlite3
 import bcrypt
 import os
 
-
 # --- CONNECTION ---
 def connect(db_path):
     return sqlite3.connect(db_path)
@@ -51,9 +50,19 @@ def change_password(conn, email, new_password):
     c.execute("UPDATE users SET password = ? WHERE email = ?", (new_password, email))
     return c.rowcount
 
+def change_email(conn, email, new_email):
+    c = conn.cursor()
+    c.execute("UPDATE users SET email = ? WHERE email = ?", (new_email, email))
+    return c.rowcount
+
+def change_name(conn, new_name, email):
+    c = conn.cursor()
+    c.execute("UPDATE users SET name = ? WHERE email = ?", (new_name, email))
+    return c.rowcount
+
 # --- USER DATABASE CREATION FUNCTION ---
 def create():
-    db_path = "users.db"
+    db_path = "root/instance/users.db"
     db = db_exists(db_path)
     if db:
         print("Database already exists.")
@@ -66,7 +75,7 @@ def create():
         connection.execute("PRAGMA foreign_keys = ON;") 
 
         # -- USERS -- (CREATE USERS TABLE)
-        create_table(connection, "users", ["uid INTEGER PRIMARY KEY AUTOINCREMENT", "name TEXT", "email TEXT", "password TEXT", "role INTEGER"])
+        create_table(connection, "users", ["uid INTEGER PRIMARY KEY AUTOINCREMENT", "name TEXT NOT NULL", "email TEXT UNIQUE", "password TEXT NOT NULL", "role INTEGER"])
         # -- COURSES -- (CREATE COURSES & COURSE_USERS TABLES)
         create_table(connection, "courses", ["cid INTEGER PRIMARY KEY AUTOINCREMENT", "cname TEXT", "description TEXT", "course_image TEXT"])
         create_table(connection, "course_users", ["cid INTEGER REFERENCES courses(cid)", "uid INTEGER REFERENCES users(uid)", "CUID INTEGER PRIMARY KEY AUTOINCREMENT"])
