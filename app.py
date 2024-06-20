@@ -1,6 +1,5 @@
 from flask import Flask, render_template, url_for
 import databases
-
 app = Flask(__name__)
 
 
@@ -34,9 +33,11 @@ def err500(error):
 def home():
     return render_template('index.html')
 
+
 # --- MAIN ---
 if __name__ == "__main__":
     app.run()
+<<<<<<< HEAD
     # ---TABLE CREATIONS---
         
     # --- USERS ---
@@ -52,3 +53,4 @@ if __name__ == "__main__":
     databases.print_table(connection, "users")
     databases.print_table(connection, "courses")
     databases.print_table(connection, "course_users")
+=======
