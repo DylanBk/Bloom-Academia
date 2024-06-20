@@ -1,4 +1,5 @@
 from flask import Flask, render_template, url_for
+import databases
 
 app = Flask(__name__)
 
@@ -36,3 +37,18 @@ def home():
 # --- MAIN ---
 if __name__ == "__main__":
     app.run()
+    # ---TABLE CREATIONS---
+        
+    # --- USERS ---
+    connection = databases.connect("users.db")
+    databases.create_table(connection, "users", ["uid INTEGER PRIMARY KEY AUTOINCREMENT", "uname TEXT", "email TEXT", "password TEXT"])
+
+
+    # --- COURSES ---
+    databases.create_table(connection, "courses", ["cid INTEGER PRIMARY KEY AUTOINCREMENT", "cname TEXT", "description TEXT", "course_image TEXT"])
+    databases.create_table(connection, "course_users", ["cid INTEGER", "uid INTEGER"])
+
+    # --- PRINT TABLES ---
+    databases.print_table(connection, "users")
+    databases.print_table(connection, "courses")
+    databases.print_table(connection, "course_users")
