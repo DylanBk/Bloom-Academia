@@ -42,7 +42,15 @@ def delete_user(conn, email):
 def find_user(conn, email):
     c = conn.cursor()
     c.execute("SELECT * FROM users WHERE email = ?", (email,))
-    return c.fetchone()
+    row = c.fetchone()
+
+    # Convert the password from a string to a bytes object
+    if row:
+        row = list(row)  # Convert row to a list to make it mutable
+        row[3] = bytes(row[3], 'utf-8')  # Assuming the password is at index 3
+        return tuple(row)  # Convert back to tuple for consistency
+    else:
+        return None
 
 def change_password(conn, email, new_password):
     c = conn.cursor()

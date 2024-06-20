@@ -7,7 +7,8 @@
 <body>
     <h2 style="text-align: center;">Create New User</h2>
 
-    <form method="POST" action="{{ url_for('create_user') }}">  
+    <form method="POST" action="{{ url_for('create_user') }}">
+        <p id="create-user-error-msg"></p>
         <label for="email">Email:</label>
         <input type="text" id="email" name="email" required>
 

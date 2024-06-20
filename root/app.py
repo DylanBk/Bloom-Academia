@@ -70,6 +70,24 @@ def search_user():
     else:
         return render_template('searchuser.html')
 
+# --- LOGIN ROUTE ---
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+
+        with db.connect("root/instance/users.db") as c:
+            user = db.find_user(c, email)
+
+        if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
+            session['user_id'] = user['id']
+            return redirect(url_for('home'))
+        else:
+            return render_template('login.html', message="Invalid email or password")
+    else:
+        return render_template('login.html')
+
 # --- SUCCESS ROUTE ---
 @app.route('/success')
 def success():
