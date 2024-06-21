@@ -4,9 +4,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Bloom Academia | {{ error_type }}</title>
 </head>  <!--PASSED PYTHON VARIABLES: error_type, error_title, error_subtitle-->
-<body>   <!-- error_type: basic error msg, e.g. Resource Not Found ... error_title: error_type but readable for user ... error_subtitle: how user can resolve the error or report it->
-    
+<body>   <!-- error_type: basic error msg, e.g. Resource Not Found ... error_title: error_type but readable for user ... error_subtitle: how user can resolve the error or report it -->
+ 
+    <div id="wrapper">
+        <div id="error-container">
+            <h2>{{ error_title }}</h2>
+            <p>{{ error_subtitle | safe }}</p>
+        </div>
+    </div>
 </body>
 </html>

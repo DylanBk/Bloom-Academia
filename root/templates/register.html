@@ -1,16 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Create User</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/password-check.js') }}" defer></script>
+    <title>Create User</title>
+
 </head>
 <body>
     <h2 style="text-align: center;">Create New User</h2>
 
-    <form action="{{ url_for('create_user') }}" method="post">
+    <form id="signup-form" action="{{ url_for('register') }}" method="post" onsubmit="return validateForm()">
         <p id="create-user-error-msg"></p>
         <label for="email">Email:</label>
-        <input type="text" id="email" name="email" required>
+        <input type="email" id="email" name="email" required>
 
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required>
@@ -18,7 +20,8 @@
         <label for="name">Name:</label>
         <input type="text" id="name" name="name" required>
 
-        <button type="submit">Create User</button>
+        <button id="signup-btn" type="submit">Register</button>
     </form>
+
 </body>
 </html>

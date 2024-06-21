@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
 </head>
+
 <body>
     <form method="POST" action="{{ url_for('login') }}">
         <p id="login-error-msg"></p>
@@ -15,11 +17,12 @@
         <label for="password">Password</label>
         <input type="password" id="password" name="password" required> <br>
 
-        <input type="submit" value="login">
+        <input id="login-btn" type="submit" value="login">
     </form>
 
     {% if message %}
-        <p style="color: red;">{{ message }}</p> 
+    <p style="color: red;">{{ message }}</p>
     {% endif %}
 </body>
+
 </html>

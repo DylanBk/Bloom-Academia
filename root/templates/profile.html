@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+</head>
+<body>
+    <h1>User Profile</h1>
+
+    <div class="profile-info">
+        <p><strong>Name:</strong> {{ name }}</p>
+        <p><strong>Email:</strong> {{ email }}</p>
+        <p><strong>Role:</strong> {{ role }}</p>
+    </div>
+
+    <h2>Joined Courses</h2>
+    <ul>
+        {% for course in courses %}
+            <li>
+                <h3>{{ course[0] }}</h3> <!-- Course Name -->
+                <p>{{ course[1] }}</p> <!-- Course Description -->
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('logout') }}">Logout</a>
+</body>
+</html>

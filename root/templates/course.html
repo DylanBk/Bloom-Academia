@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+</head>
+<body>
+    <h1>{{ title }}</h1>
+
+    <div class="course-details">
+        {% if img_base64 %}
+            <img src="data:image/jpeg;base64,{{ img_base64 }}" alt="{{ title }}" class="course-image"/>
+        {% endif %}
+        <p>{{ description }}</p> 
+    </div>
+
+    <h2>Tasks</h2>
+    <ul class="task-list">
+        {% for task in tasks %}
+            <li class="task-item">
+                <p>{{ task[1] }}</p> <!-- Task Description -->
+            </li>
+        {% endfor %}
+    </ul>
+
+    <form action="{{ url_for('add_task', course_id=course_id) }}" method="post" class="task-form">
+        <input type="text" name="task_description" placeholder="New Task Description" required>
+        <button type="submit">Add Task</button>
+    </form>
+
+    <a href="{{ url_for('courses') }}">Back to Courses List</a>
+</body>
+</html>

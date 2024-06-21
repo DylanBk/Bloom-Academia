@@ -7,8 +7,55 @@
     <title>Document</title>
 </head>
 <body>
-    <h1>Welcome to the Flask App</h1>
-    <button><a href="{{ url_for('search_user') }}">Search User</a></button>
-    <button><a href="{{ url_for('create_user') }}">Create User</a></button>
+    <header>
+        <h1>Bloom Academia</h1>
+        <nav>
+
+            <form id="search-bar" action="#" method="#"> <!-- send form data to python to check if input exists in db -->
+                <input id="search-bar-input" type="text" name="search-bar-input" placeholder="Search for a course..."> <!-- search query -->
+                <button id="search-bar-btn" type="submit" name="search-bar-btn">Search</button> <!-- press to search -->
+            </form>
+
+            <a href="{{ url_for('profile') }}">In Progress</a>
+            <a href="{{ url_for('list_courses') }}">Courses</a>
+            {% if name %}
+                <a href="{{ url_for('profile') }}">Account</a>
+            {% else %}
+                <a href="{{ 'login' }}">Login</a>
+
+        </nav>
+    </header>
+
+    <div id="main-wrapper">
+        <h1>Welcome to Bloom Academia</h1>
+
+        <div id="welcome-msg">
+            {% if name %}
+                <p>Welcome, {{ name }}!</p>
+                <button><a href="{{ url_for('logout') }}">Logout</a></button>
+            {% else %}
+                <p>Please <button><a href="{{ url_for('login') }}">Login</a></button> to continue.</p>
+            {% endif %}
+        </div>
+
+        <button><a href="{{ url_for('register') }}">Register</a></button>
+        <button><a href="{{ url_for('search_user') }}">Search User</a></button>
+        <button><a href="{{ url_for('create_course') }}">Create Course</a></button>
+        <button><a href="{{ url_for('list_courses') }}">View Courses</a></button>
+
+    </div> <!-- end of #main-wrapper -->
+
+    <footer>
+        <div id="footer-section1">
+            <!--list of links and stuff-->
+        </div>
+        <div id="footer-section2">
+            <!--list of links and stuff-->
+        </div>
+        <div id="footer-section3">
+            <!--list of links and stuff-->
+        </div>
+    </footer>
+
 </body>
 </html>
