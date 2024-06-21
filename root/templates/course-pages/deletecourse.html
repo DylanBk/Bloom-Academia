@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Search User</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
 </head>
 <body>
 
@@ -26,11 +27,10 @@
         </nav>
     </header>
 
-    <h2>Search for User by Email</h2>
-    <form method="POST" action="{{ url_for('search_user') }}">
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-        <button type="submit">Search</button>
+    <form action="" method="post"> 
+        <input type="text" name="course_id" placeholder="Course ID">
+        <button type="submit">Delete</button>
+        
     </form>
 </body>
 </html>

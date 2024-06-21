@@ -23,95 +23,131 @@ body {
 
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   background-color: #FBFBFE;
   background-image: url("root/static/images/wave-haikei.png");
   color: #020113;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 header {
     height: 10%;
     width: 100%;
     display: flex;
-    
+    align-items: center;
+    justify-content: space-around;
+    padding: 3rem 1rem;
+    box-shadow: 0 0 10px 0 black;
+}
+
+nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+nav a {
+    color: var(--secondary);
+}
+
+.nav-item {
+    margin: 0 1rem;
 }
 
 
-
-
-
-
-
-
-
-/* replace below */
-
-
-
-h1 {
-    color: #006F9B;              /* Secondary */
-    text-align: center;
-    margin-bottom: 20px;
+#search-bar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
-textarea {
-    width: 100%;
-    height: 100px;
-    padding: 12px;
-    border: 1px solid #ddd;       /* Lighter border for contrast */
-    border-radius: 4px;
-    box-sizing: border-box;
-    resize: vertical;
-    background-color: #fff;       
-    color: #020113;
+#search-bar-input {
+    padding: 1rem;
+    border: none;
+    border-radius: 10px 0 0 10px;
+    background-color: #f0f0f0;
+}
+/* #search-bar-input:focus {
+} */
+
+#search-bar-btn {
+    display: flex;
+    padding: 7px; /*makes button same height as search-bar-input*/ 
+    border: none;
+    border-radius: 0 20px 20px 0;
+    background-color: var(--primary);
+    transition: 0.5s;
+    cursor: pointer;
+}
+#search-bar-btn:hover {
+    background-color: var(--secondary);
 }
 
-button {
-    background-color: #1DAADA;    /* Primary */
-    color: #fff;
-    padding: 10px 20px;
+#search-bar-btn img {
+    height: 16px;
+}
+
+#main-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+#welcome-msg {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 5rem auto;
+}
+#welcome-msg h1 {
+    color: var(--secondary);
+    margin: 0.25rem 0;
+}
+
+#welcome-msg-btn-container {
+    display: flex;
+    flex-direction: column;
+    margin: 0.25rem 0;
+}
+
+#welcome-msg button {
+    padding: 0.5rem;
     border: none;
     border-radius: 5px;
+    margin: 0.25rem 0;
+    background-color: var(--primary);
+    transition: 0.2s;
     cursor: pointer;
-    margin: 10px;
-    transition: background-color 0.3s ease;
+}
+#welcome-msg button:hover {
+    background-color: var(--secondary);
+}
+#welcome-msg button a {
+    color: white;
 }
 
-button:hover {
-    background-color: #006F9B; /* Accent on hover */
+#home-options {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 3rem auto;
 }
 
-a {
-    text-decoration: none;
-    color: #020113;             /* Text */
+.home-options-btn {
+    padding: 1rem;
+    border: none;
+    border-radius: 5px;
+    margin: 0.5rem 0;
+    background-color: var(--primary);
+    transition: 0.5s;
+    cursor: pointer;
+}
+.home-options-btn a {
+    color: white;
+}
+.home-options-btn:hover {
+    background-color: var(--secondary);
 }
 
-form {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    width: 300px;
-    text-align: center;
-    max-width: 90%; /* Make the form responsive */
-    margin: 0 auto; /* Center the form horizontally */
-}
-
-label {
-    display: block;
-    margin-bottom: 5px;
-    color: #006F9B;             /* Secondary */
-}
-
-input[type="email"], input[type="password"], input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #fff;
-    color: #020113;
+.course-image {
+    height: 100px;
 }

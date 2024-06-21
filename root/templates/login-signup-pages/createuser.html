@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bloom Academia | {{ error_type }}</title>
-</head>  <!--PASSED PYTHON VARIABLES: error_type, error_title, error_subtitle-->
-<body>   <!-- error_type: basic error msg, e.g. Resource Not Found ... error_title: error_type but readable for user ... error_subtitle: how user can resolve the error or report it -->
+    <title>Create User</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
 
     <header>
         <a href="{{ url_for('home') }}"><h1>Welcome to Bloom Academia</h1></a>
@@ -28,11 +26,20 @@
         </nav>
     </header>
 
-    <div id="wrapper">
-        <div id="error-container">
-            <h2>{{ error_title }}</h2>
-            <p>{{ error_subtitle | safe }}</p>
-        </div>
-    </div>
+    <h2 style="text-align: center;">Create New User</h2>
+
+    <form method="POST" action="{{ url_for('create_user') }}">
+        <p id="create-user-error-msg"></p>
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" required>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <button type="submit">Create User</button>
+    </form>
 </body>
 </html>

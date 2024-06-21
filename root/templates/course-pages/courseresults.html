@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bloom Academia | {{ error_type }}</title>
-</head>  <!--PASSED PYTHON VARIABLES: error_type, error_title, error_subtitle-->
-<body>   <!-- error_type: basic error msg, e.g. Resource Not Found ... error_title: error_type but readable for user ... error_subtitle: how user can resolve the error or report it -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Search Results</title>
+</head>
+<body>
 
     <header>
         <a href="{{ url_for('home') }}"><h1>Welcome to Bloom Academia</h1></a>
@@ -28,11 +26,18 @@
         </nav>
     </header>
 
-    <div id="wrapper">
-        <div id="error-container">
-            <h2>{{ error_title }}</h2>
-            <p>{{ error_subtitle | safe }}</p>
-        </div>
-    </div>
+    {% if courses %}
+        <h2>Course Found</h2>
+        {% for course in courses %}
+            <p>Name: {{ course[0] }}</p>
+            <p>Description: {{ course[1] }}</p>
+            <img class="course-image" src="data:image/jpeg;base64,{{ course[2] }}" alt="{{ course[0] }}">
+        {% endfor %}
+
+        <a href="{{ url_for('search_course') }}">Search Again</a>
+    {% elif message %}
+        <p>{{ message }}</p>
+        <a href="{{ url_for('search_course') }}">Search Again</a>
+    {% endif %}
 </body>
 </html>

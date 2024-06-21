@@ -12,33 +12,41 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Error Handlers
-@app.errorhandler(400)
+
+# --- ERROR HANDLING ---
+
+@app.errorhandler(400) # bad request
 def err400(error):
     return render_template('error.html', error_type="Bad Request", error_title="Sorry! We cannot process your request.", error_subtitle="Double check your inputs and try again.")
 
-@app.errorhandler(401)
+@app.errorhandler(401) # no authorisation
 def err401(error):
     return render_template('error.html', error_type="Unauthorised Access", error_title="You do not have authorisation to view this content.", error_subtitle="Please log in to access this page.")
 
-@app.errorhandler(403)
+@app.errorhandler(403) # forbidden resource
 def err403(error):
     return render_template('error.html', error_type="Forbidden", error_title="You do not have access to view this content.", error_subtitle="Please contact us if you believe this to be a mistake.")
 
-@app.errorhandler(404)
+@app.errorhandler(404) # resource not found
 def err404(error):
     return render_template('error.html', error_type="Resource Not Found", error_title="Sorry! We could not find that page.", error_subtitle="Check the URL or return to the <a href='" + url_for('home') + "'>home page</a>.")
 
-@app.errorhandler(500)
+@app.errorhandler(500) # internal server error
 def err500(error):
     return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong on our end.", error_subtitle="Check back later or report the issue at <a href='" + url_for('home') + "'>email or something</a>.")
 
-# Routes
+
+# --- ROUTES ---
+
+# --- HOME/LANDING ---
 @app.route('/')
 @app.route('/home')
 def home():
     name = session.get('name')
     return render_template('index.html', name=name)
+
+
+# --- COURSE ROUTES ---
 
 @app.route('/createcourse', methods=['GET', 'POST'])
 def create_course():
@@ -62,7 +70,7 @@ def create_course():
                 return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err))
             except Exception as e:
                 return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong.", error_subtitle=str(e))
-    return render_template('createcourse.html')
+    return render_template('/course-pages/createcourse.html')
 
 @app.route('/courses')
 def list_courses():
@@ -74,6 +82,7 @@ def list_courses():
             updated_courses = []
             for course in courses:
                 title, description, img_data, course_id = course
+
                 if img_data:
                     img_base64 = base64.b64encode(img_data).decode('utf-8')
                 else:
@@ -81,7 +90,7 @@ def list_courses():
                 updated_courses.append((title, description, img_base64, course_id))
 
         message = request.args.get('message', '')
-        return render_template('courses.html', courses=updated_courses, message=message)
+        return render_template('/course-pages/courses.html', courses=updated_courses, message=message)
     except db.DatabaseError as db_err:
         return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err))
     except Exception as e:
@@ -98,7 +107,7 @@ def view_course(course_id):
                 img_base64 = base64.b64encode(img_data).decode('utf-8')
             else:
                 img_base64 = None
-            return render_template('course.html', title=title, description=description, img_base64=img_base64, course_id=course_id, tasks=tasks)
+            return render_template('/course-pages/course.html', title=title, description=description, img_base64=img_base64, course_id=course_id, tasks=tasks)
     except db.DatabaseError as db_err:
         return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err))
     except Exception as e:
@@ -109,12 +118,51 @@ def add_task(course_id):
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
+    task_title = request.form['task_title']
     task_description = request.form['task_description']
 
     with db.connect("./instance/users.db") as conn:
-        db.add_task(conn, course_id, task_description)
+        db.add_task(conn, course_id, task_title, task_description)
 
     return redirect(url_for('view_course', course_id=course_id))
+
+@app.route('/remove_task/<int:course_id>', methods=['POST'])
+def remove_task(course_id):
+    if request.method == 'POST':
+        if 'user_id' not in session:
+            return redirect(url_for('login'))
+
+        task_title = request.form['task_title']
+
+        with db.connect("./instance/users.db") as conn:
+            db.remove_task(conn, course_id, task_title)
+
+    return redirect(url_for('view_course', course_id=course_id))
+
+@app.route('/searchcourse', methods=['GET', 'POST'])
+def search_course():
+    if request.method == 'POST':
+        query = request.form['search-bar-input']
+
+        with db.connect("./instance/users.db") as conn:
+            courses = db.find_course(conn, query)
+
+        if courses:
+            updated_courses = []
+            for course in courses:
+                title, description, img_data, course_id = course
+
+                if img_data:
+                    img_base64 = base64.b64encode(img_data).decode('utf-8')
+                else:
+                    img_base64 = None
+
+                updated_course = ((title, description, img_base64, course_id))
+                updated_courses.append(updated_course)
+
+            return render_template('/course-pages/courseresults.html', courses=updated_courses)
+        return render_template('/course-pages/courseresults.html', message="Course not found")
+    return render_template('/course-pages/course.html')
 
 @app.route('/join_course/<int:course_id>', methods=['POST'])
 def join_course(course_id):
@@ -155,7 +203,10 @@ def delete_course():
             db.delete_course(conn, course_id)
 
         return redirect(url_for('success', message="Course deleted successfully!"))
-    return render_template('deletecourse.html')
+    return render_template('/course-pages/deletecourse.html')
+
+
+# --- USER ROUTES ---
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -168,7 +219,7 @@ def register():
             db.create_user(conn, name, email, password, role="1")
 
         return redirect(url_for('success', message="User created successfully!"))
-    return render_template('register.html')
+    return render_template('/login-signup-pages/register.html')
 
 @app.route('/profile')
 def profile():
@@ -213,8 +264,8 @@ def login():
             session['role'] = user[4]  # 'role' is at index 4 in the tuple
             session['name'] = user[1]  # 'name' is at index 1 in the tuple
             return redirect(url_for('home'))
-        return render_template('login.html', message="Invalid email or password")
-    return render_template('login.html')
+        return render_template('/login-signup-pages/login.html', message="Invalid email or password")
+    return render_template('/login-signup-pages/login.html')
 
 @app.route('/logout')
 def logout():
@@ -226,22 +277,12 @@ def logout():
 @app.route('/success')
 def success():
     message = request.args.get('message', 'Success!')  # Get message, default to "Success!"
-    return render_template('success.html', message=message)
+    return render_template('/login-signup-pages/success.html', message=message)
 
-@app.route('/searchcourse', methods=['GET', 'POST'])
-def search_course():
-    if request.method == 'POST':
-        query = request.form['search-bar-input']
 
-        with db.connect("./instance/users.db") as conn:
-            course = db.find_course(conn, query)
-
-        if course:
-            return render_template('courseresults.html', course=course)
-        return render_template('courseresults.html', message="Course not found")
-
+# --- MAIN PROGRAM ---
 
 db.create()
 
-if __name__ == "__main__":  
+if __name__ == "__main__":
     app.run()

@@ -2,17 +2,23 @@ import sqlite3
 import bcrypt
 import os
 
+
 # --- CONNECTION ---
+
 def connect(db_path):
     return sqlite3.connect(db_path)
 
+
 # --- TABLES ---
+
 def create_table(conn, table_name, columns):
     c = conn.cursor()
     c.execute("CREATE TABLE IF NOT EXISTS {} ({})".format(table_name, ", ".join(columns)))
     conn.commit()
 
+
 # --- CHECKS ---
+
 def db_exists(db_path):
     if not os.path.exists(db_path):
         return False
@@ -27,7 +33,9 @@ def print_database(conn):
         print(row[0])
     conn.close()
 
-# --- PROFILE FUNCTIONS --
+
+# --- PROFILE FUNCTIONS ---
+
 def get_user_profile(conn, user_id):
     c = conn.cursor()
     c.execute("SELECT name, email, role FROM users WHERE uid = ?", (user_id,))
@@ -109,22 +117,27 @@ def get_course(conn, course_id):
     return c.fetchone()
 
 # --- TASK FUNCTIONS ---
-def add_task(conn, course_id, task_description):
+def add_task(conn, course_id, task_title, task_description):
     c = conn.cursor()
-    c.execute("INSERT INTO course_tasks (cid, description) VALUES (?, ?)", (course_id, task_description))
+    c.execute("INSERT INTO course_tasks (cid, task_title, task_description) VALUES (?, ?, ?)", (course_id, task_title, task_description))
     return c.lastrowid
+
+def remove_task(conn, course_id, task_title):
+    c = conn.cursor()
+    c.execute("DELETE FROM course_tasks WHERE cid = ? AND task_title = ?", (course_id, task_title))
+    return c.rowcount
 
 def get_tasks(conn, course_id):
     c = conn.cursor()
-    c.execute("SELECT task_id, description FROM course_tasks WHERE cid = ?", (course_id,))
+    c.execute("SELECT tid, task_title, task_description FROM course_tasks WHERE cid = ?", (course_id,))
     return c.fetchall()
 
 def find_course(conn, cname):
     c = conn.cursor()
-    c.execute("SELECT * FROM courses WHERE cname = ?", (cname,))
-    return c.fetchone()
+    c.execute("SELECT cname, description, course_image, cid FROM courses WHERE cname = ?", (cname,))
+    return c.fetchall()
 
-# --- USER DATABASE CREATION FUNCTION ---
+# --- DATABASE CREATION FUNCTION ---
 def create():
     db_path = "./instance/users.db"
     db = db_exists(db_path)
@@ -143,7 +156,7 @@ def create():
         # -- COURSES -- (CREATE COURSES & COURSE_USERS TABLES)
         create_table(connection, "courses", ["cid INTEGER PRIMARY KEY AUTOINCREMENT", "cname TEXT", "description TEXT", "course_image BLOB"])
         create_table(connection, "course_users", ["cid INTEGER REFERENCES courses(cid)", "uid INTEGER REFERENCES users(uid)", "CUID INTEGER PRIMARY KEY AUTOINCREMENT"])
-        create_table(connection, "course_tasks", ["tid INTEGER PRIMARY KEY AUTOINCREMENT", "cid INTEGER REFERENCES courses(cid)", "task TEXT", "completed INTEGER"])
+        create_table(connection, "course_tasks", ["tid INTEGER PRIMARY KEY AUTOINCREMENT", "cid INTEGER REFERENCES courses(cid)", "task_title TEXT", "task_description TEXT", "completed INTEGER"])
         create_table(connection, "users_tasks", ["tid INTEGER REFERENCES course_tasks(tid)", "uid INTEGER REFERENCES users(uid)", "TUID INTEGER PRIMARY KEY AUTOINCREMENT"])
         
         # -- FINISH --

@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bloom Academia | {{ error_type }}</title>
-</head>  <!--PASSED PYTHON VARIABLES: error_type, error_title, error_subtitle-->
-<body>   <!-- error_type: basic error msg, e.g. Resource Not Found ... error_title: error_type but readable for user ... error_subtitle: how user can resolve the error or report it -->
+    <title>Upload Course</title>
+</head>
+<body>
 
     <header>
         <a href="{{ url_for('home') }}"><h1>Welcome to Bloom Academia</h1></a>
@@ -28,11 +28,18 @@
         </nav>
     </header>
 
-    <div id="wrapper">
-        <div id="error-container">
-            <h2>{{ error_title }}</h2>
-            <p>{{ error_subtitle | safe }}</p>
-        </div>
-    </div>
+    <h2>Upload a Course</h2>
+    <form action="{{ url_for('create_course') }}" method="post" enctype="multipart/form-data"> 
+        <label for="course-title">Course Title:</label>
+        <input id="course-title" type="text" name="course-title"><br><br>
+
+        <label for="course-description">Course Description:</label>
+        <input id="course-description" type="text" name="course-description"><br><br>
+
+        <label for="course-img">Course Image:</label>
+        <input id="course-img" type="file" name="course-img" accept="image/*"><br><br>
+
+        <button type="submit">Upload Course</button>
+    </form>
 </body>
 </html>
