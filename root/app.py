@@ -5,7 +5,7 @@ app = Flask(__name__)
 # Secret key for session management.
 app.secret_key = 'supersecretkey' 
 
-# Allowed extensions for image uploads
+# Allowed extensions for file uploads
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'jfif'}
 
 def allowed_file(filename):
