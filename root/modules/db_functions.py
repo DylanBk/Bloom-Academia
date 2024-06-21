@@ -119,9 +119,14 @@ def get_tasks(conn, course_id):
     c.execute("SELECT task_id, description FROM course_tasks WHERE cid = ?", (course_id,))
     return c.fetchall()
 
+def find_course(conn, cname):
+    c = conn.cursor()
+    c.execute("SELECT * FROM courses WHERE cname = ?", (cname,))
+    return c.fetchone()
+
 # --- USER DATABASE CREATION FUNCTION ---
 def create():
-    db_path = "root/instance/users.db"
+    db_path = "./instance/users.db"
     db = db_exists(db_path)
     if db:
         print("Database already exists.")

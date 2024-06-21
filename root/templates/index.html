@@ -11,7 +11,7 @@
         <h1>Bloom Academia</h1>
         <nav>
 
-            <form id="search-bar" action="#" method="#"> <!-- send form data to python to check if input exists in db -->
+            <form id="search-bar" method="POST" action="{{ url_for('search_course') }}"> <!-- send form data to python to check if input exists in db -->
                 <input id="search-bar-input" type="text" name="search-bar-input" placeholder="Search for a course..."> <!-- search query -->
                 <button id="search-bar-btn" type="submit" name="search-bar-btn">Search</button> <!-- press to search -->
             </form>
@@ -22,6 +22,7 @@
                 <a href="{{ url_for('profile') }}">Account</a>
             {% else %}
                 <a href="{{ 'login' }}">Login</a>
+            {% endif %}
 
         </nav>
     </header>
@@ -30,12 +31,14 @@
         <h1>Welcome to Bloom Academia</h1>
 
         <div id="welcome-msg">
-            {% if name %}
-                <p>Welcome, {{ name }}!</p>
-                <button><a href="{{ url_for('logout') }}">Logout</a></button>
-            {% else %}
-                <p>Please <button><a href="{{ url_for('login') }}">Login</a></button> to continue.</p>
-            {% endif %}
+        {% if name %}
+            <p>Welcome, {{ name }}!</p>
+            <button><a href="{{ url_for('logout') }}">Logout</a></button>
+        {% else %}
+            <p>Please <button><a href="{{ url_for('login') }}">Login</a></button> to continue.</p>
+        {% endif %}
+        
+        <button><a href="{{ url_for('list_courses') }}">View Courses</a></button>
         </div>
 
         <button><a href="{{ url_for('register') }}">Register</a></button>

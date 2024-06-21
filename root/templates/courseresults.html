@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Search Results</title>
+</head>
+<body>
+    {% if course %}
+        <h2>Course Found</h2>
+        <p>Name: {{ course[1] }}</p>
+        <p>Description: {{ course[2] }}</p>
+        <!-- <p>Image: {{ course[3] }}</p> --> <!-- use link for image -->
+        
+        <a href="{{ url_for('search_course') }}">Search Again</a>
+    {% elif message %}
+        <p>{{ message }}</p>
+        <a href="{{ url_for('search_course') }}">Search Again</a>
+    {% endif %}
+</body>
+</html>

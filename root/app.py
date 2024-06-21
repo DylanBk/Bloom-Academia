@@ -53,7 +53,7 @@ def create_course():
                 title = request.form['course-title']
                 description = request.form['course-description']
 
-                with db.connect("root/instance/users.db") as conn:
+                with db.connect("././instance/users.db") as conn:
                     cursor = conn.cursor()
                     db.upload_course(conn, title, description, img_data)
                     conn.commit()
@@ -67,7 +67,7 @@ def create_course():
 @app.route('/courses')
 def list_courses():
     try:
-        with db.connect("root/instance/users.db") as conn:
+        with db.connect("./instance/users.db") as conn:
             courses = db.get_courses(conn)
 
             # Convert binary image data to base64
@@ -90,7 +90,7 @@ def list_courses():
 @app.route('/courses/<int:course_id>')
 def view_course(course_id):
     try:
-        with db.connect("root/instance/users.db") as conn:
+        with db.connect("./instance/users.db") as conn:
             course = db.get_course(conn, course_id)
             tasks = db.get_tasks(conn, course_id)
             title, description, img_data, course_id = course
@@ -111,7 +111,7 @@ def add_task(course_id):
 
     task_description = request.form['task_description']
 
-    with db.connect("root/instance/users.db") as conn:
+    with db.connect("./instance/users.db") as conn:
         db.add_task(conn, course_id, task_description)
 
     return redirect(url_for('view_course', course_id=course_id))
@@ -123,7 +123,7 @@ def join_course(course_id):
 
     user_id = session['user_id']
 
-    with db.connect("root/instance/users.db") as conn:
+    with db.connect("./instance/users.db") as conn:
         cursor = conn.cursor()
         # Check if the user is already joined
         cursor.execute("SELECT * FROM course_users WHERE cid = ? AND uid = ?", (course_id, user_id))
@@ -141,7 +141,7 @@ def leave_course(course_id):
         return redirect(url_for('login'))
     user_id = session['user_id']
     
-    with db.connect("root/instance/users.db") as conn:
+    with db.connect("./instance/users.db") as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM course_users WHERE cid = ? AND uid = ?", (course_id, user_id))
         conn.commit()
@@ -151,7 +151,7 @@ def leave_course(course_id):
 def delete_course():
     if request.method == 'POST':
         course_id = request.form['course_id']
-        with db.connect("root/instance/users.db") as conn:
+        with db.connect("./instance/users.db") as conn:
             db.delete_course(conn, course_id)
 
         return redirect(url_for('success', message="Course deleted successfully!"))
@@ -164,7 +164,7 @@ def register():
         password = request.form['password']
         name = request.form['name']
 
-        with db.connect("root/instance/users.db") as conn:
+        with db.connect("./instance/users.db") as conn:
             db.create_user(conn, name, email, password, role="1")
 
         return redirect(url_for('success', message="User created successfully!"))
@@ -177,7 +177,7 @@ def profile():
 
     user_id = session['user_id']
 
-    with db.connect("root/instance/users.db") as conn:
+    with db.connect("./instance/users.db") as conn:
         user_profile = db.get_user_profile(conn, user_id)
         user_courses = db.get_user_courses(conn, user_id)
 
@@ -191,7 +191,7 @@ def profile():
 def search_user():
     if request.method == 'POST':
         email = request.form['email']
-        with db.connect("root/instance/users.db") as conn:
+        with db.connect("./instance/users.db") as conn:
             user = db.find_user(conn, email)
 
         if user:
@@ -205,7 +205,7 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        with db.connect("root/instance/users.db") as conn:
+        with db.connect("./instance/users.db") as conn:
             user = db.find_user(conn, email)
 
         if user and bcrypt.checkpw(password.encode('utf-8'), user[3]):  # 'password' is at index 3
@@ -227,6 +227,19 @@ def logout():
 def success():
     message = request.args.get('message', 'Success!')  # Get message, default to "Success!"
     return render_template('success.html', message=message)
+
+@app.route('/searchcourse', methods=['GET', 'POST'])
+def search_course():
+    if request.method == 'POST':
+        query = request.form['search-bar-input']
+
+        with db.connect("./instance/users.db") as conn:
+            course = db.find_course(conn, query)
+
+        if course:
+            return render_template('courseresults.html', course=course)
+        return render_template('courseresults.html', message="Course not found")
+
 
 db.create()
 
