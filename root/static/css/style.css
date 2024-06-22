@@ -3,6 +3,20 @@
     --primary: #1DAADA;
     --secondary: #006F9B;
     --accent: #00B64C;
+
+    @media (prefers-contrast) and (not (forced-colors)) { /* colour scheme for people with contrast mode on & forced colours off */
+        --bg: #FFFFFF
+        --primary: #1DAADA;
+        --secondary: #0836A2; 
+        --accent: #03d85c;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        --bg: #141414;
+        --primary: #1DB1E2;
+        --secondary: #0087BD;
+        --accent: #00B64C;
+    }
 }
 
 * {
