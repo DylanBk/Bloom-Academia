@@ -41,10 +41,10 @@
                 <div class="course-info">
                     <h2 class="course-title">{{ course[0] }}</h2>
                     <p class="course-description">{{ course[1] }}</p>
-                    <form action="{{ url_for('join_course', course_id=course[3]) }}" method="post">
+                    <form action="{{ url_for('join_course', cid=course[3]) }}" method="post">
                         <button type="submit" class="join-course-button">Join Course</button>
                     </form>
-                    <form action="{{ url_for('leave_course', course_id=course[3]) }}" method="post">
+                    <form action="{{ url_for('leave_course', cid=course[3]) }}" method="post">
                         <button type="submit" class="leave-course-button">Leave Course</button>
                     </form>
                 </div>

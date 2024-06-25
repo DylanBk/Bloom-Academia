@@ -85,14 +85,14 @@ def change_name(conn, new_name, email):
     c.execute("UPDATE users SET name = ? WHERE email = ?", (new_name, email))
     return c.rowcount
 
-def join_course(conn, course_id, user_id):
+def join_course(conn, cid, user_id):
     c = conn.cursor()
-    c.execute("INSERT INTO course_users (cid, uid) VALUES (?, ?)", (course_id, user_id))
+    c.execute("INSERT INTO course_users (cid, uid) VALUES (?, ?)", (cid, user_id))
     return c.rowcount
 
-def leave_course(conn, course_id, user_id):
+def leave_course(conn, cid, user_id):
     c = conn.cursor()
-    c.execute("DELETE FROM course_users WHERE cid = ? AND uid = ?", (course_id, user_id))
+    c.execute("DELETE FROM course_users WHERE cid = ? AND uid = ?", (cid, user_id))
     return c.rowcount
 
 # --- COURSE FUNCTIONS ---
@@ -111,25 +111,25 @@ def get_courses(conn):
     c.execute("SELECT cname, description, course_image, cid FROM courses")
     return c.fetchall()
 
-def get_course(conn, course_id):
+def get_course(conn, cid):
     c = conn.cursor()
-    c.execute("SELECT cname, description, course_image, cid FROM courses WHERE cid = ?", (course_id,))
+    c.execute("SELECT cname, description, course_image, cid FROM courses WHERE cid = ?", (cid,))
     return c.fetchone()
 
 # --- TASK FUNCTIONS ---
-def add_task(conn, course_id, task_title, task_description):
+def add_task(conn, cid, task_title, task_description):
     c = conn.cursor()
-    c.execute("INSERT INTO course_tasks (cid, task_title, task_description) VALUES (?, ?, ?)", (course_id, task_title, task_description))
+    c.execute("INSERT INTO course_tasks (cid, task_title, task_description) VALUES (?, ?, ?)", (cid, task_title, task_description))
     return c.lastrowid
 
-def remove_task(conn, course_id, task_title):
+def remove_task(conn, cid, task_title):
     c = conn.cursor()
-    c.execute("DELETE FROM course_tasks WHERE cid = ? AND task_title = ?", (course_id, task_title))
+    c.execute("DELETE FROM course_tasks WHERE cid = ? AND task_title = ?", (cid, task_title))
     return c.rowcount
 
-def get_tasks(conn, course_id):
+def get_tasks(conn, cid):
     c = conn.cursor()
-    c.execute("SELECT tid, task_title, task_description FROM course_tasks WHERE cid = ?", (course_id,))
+    c.execute("SELECT tid, task_title, task_description FROM course_tasks WHERE cid = ?", (cid,))
     return c.fetchall()
 
 def find_course(conn, cname):

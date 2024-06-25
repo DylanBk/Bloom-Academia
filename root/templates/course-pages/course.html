@@ -47,13 +47,13 @@
         {% endfor %}
     </ul>
 
-    <form class="task-form" action="{{ url_for('add_task', course_id=course_id) }}" method="post">
+    <form class="task-form" action="{{ url_for('add_task', cid=cid) }}" method="post">
         <input type="text" name="task_title" placeholder="New Task Title" required>
         <input type="text" name="task_description" placeholder="New Task Description" required>
         <button type="submit">Add Task</button>
     </form>
 
-    <form class="task-form" action="{{ url_for('remove_task', course_id=course_id) }}" method="post">
+    <form class="task-form" action="{{ url_for('remove_task', cid=cid) }}" method="post">
         <input type="text" name="task_title" placeholder="Task Title" required>
         <button type="submit">Remove Task</button>
     </form>

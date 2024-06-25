@@ -81,13 +81,13 @@ def list_courses():
             # Convert binary image data to base64
             updated_courses = []
             for course in courses:
-                title, description, img_data, course_id = course
+                title, description, img_data, cid = course
 
                 if img_data:
                     img_base64 = base64.b64encode(img_data).decode('utf-8')
                 else:
                     img_base64 = None
-                updated_courses.append((title, description, img_base64, course_id))
+                updated_courses.append((title, description, img_base64, cid))
 
         message = request.args.get('message', '')
         return render_template('/course-pages/courses.html', courses=updated_courses, message=message)
@@ -96,25 +96,25 @@ def list_courses():
     except Exception as e:
         return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong.", error_subtitle=str(e))
     
-@app.route('/courses/<int:course_id>')
-def view_course(course_id):
+@app.route('/courses/<int:cid>')
+def view_course(cid):
     try:
         with db.connect("./instance/users.db") as conn:
-            course = db.get_course(conn, course_id)
-            tasks = db.get_tasks(conn, course_id)
-            title, description, img_data, course_id = course
+            course = db.get_course(conn, cid)
+            tasks = db.get_tasks(conn, cid)
+            title, description, img_data, cid = course
             if img_data:
                 img_base64 = base64.b64encode(img_data).decode('utf-8')
             else:
                 img_base64 = None
-            return render_template('/course-pages/course.html', title=title, description=description, img_base64=img_base64, course_id=course_id, tasks=tasks)
+            return render_template('/course-pages/course.html', title=title, description=description, img_base64=img_base64, cid=cid, tasks=tasks)
     except db.DatabaseError as db_err:
         return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err))
     except Exception as e:
         return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong.", error_subtitle=str(e))
 
-@app.route('/add_task/<int:course_id>', methods=['POST'])
-def add_task(course_id):
+@app.route('/add_task/<int:cid>', methods=['POST'])
+def add_task(cid):
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
@@ -122,12 +122,12 @@ def add_task(course_id):
     task_description = request.form['task_description']
 
     with db.connect("./instance/users.db") as conn:
-        db.add_task(conn, course_id, task_title, task_description)
+        db.add_task(conn, cid, task_title, task_description)
 
-    return redirect(url_for('view_course', course_id=course_id))
+    return redirect(url_for('view_course', cid=cid))
 
-@app.route('/remove_task/<int:course_id>', methods=['POST'])
-def remove_task(course_id):
+@app.route('/remove_task/<int:cid>', methods=['POST'])
+def remove_task(cid):
     if request.method == 'POST':
         if 'user_id' not in session:
             return redirect(url_for('login'))
@@ -135,9 +135,9 @@ def remove_task(course_id):
         task_title = request.form['task_title']
 
         with db.connect("./instance/users.db") as conn:
-            db.remove_task(conn, course_id, task_title)
+            db.remove_task(conn, cid, task_title)
 
-    return redirect(url_for('view_course', course_id=course_id))
+    return redirect(url_for('view_course', cid=cid))
 
 @app.route('/searchcourse', methods=['GET', 'POST'])
 def search_course():
@@ -146,26 +146,27 @@ def search_course():
 
         with db.connect("./instance/users.db") as conn:
             courses = db.find_course(conn, query)
+            print(type(courses))
 
         if courses:
             updated_courses = []
             for course in courses:
-                title, description, img_data, course_id = course
+                title, description, img_data, cid = course
 
                 if img_data:
                     img_base64 = base64.b64encode(img_data).decode('utf-8')
                 else:
                     img_base64 = None
 
-                updated_course = ((title, description, img_base64, course_id))
+                updated_course = ((title, description, img_base64, cid))
                 updated_courses.append(updated_course)
 
             return render_template('/course-pages/courseresults.html', courses=updated_courses)
         return render_template('/course-pages/courseresults.html', message="Course not found")
     return render_template('/course-pages/course.html')
 
-@app.route('/join_course/<int:course_id>', methods=['POST'])
-def join_course(course_id):
+@app.route('/join_course/<int:cid>', methods=['POST'])
+def join_course(cid):
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
@@ -174,33 +175,33 @@ def join_course(course_id):
     with db.connect("./instance/users.db") as conn:
         cursor = conn.cursor()
         # Check if the user is already joined
-        cursor.execute("SELECT * FROM course_users WHERE cid = ? AND uid = ?", (course_id, user_id))
+        cursor.execute("SELECT * FROM course_users WHERE cid = ? AND uid = ?", (cid, user_id))
         existing_join = cursor.fetchone()
         if not existing_join:
-            cursor.execute("INSERT INTO course_users (cid, uid) VALUES (?, ?)", (course_id, user_id))
+            cursor.execute("INSERT INTO course_users (cid, uid) VALUES (?, ?)", (cid, user_id))
             conn.commit()
             return redirect(url_for('list_courses', message='Successfully joined the course!'))
         else:
             return redirect(url_for('list_courses', message='Already enrolled in the course!'))
 
-@app.route('/leave_course/<int:course_id>', methods=['POST'])
-def leave_course(course_id):
+@app.route('/leave_course/<int:cid>', methods=['POST'])
+def leave_course(cid):
     if 'user_id' not in session:
         return redirect(url_for('login'))
     user_id = session['user_id']
     
     with db.connect("./instance/users.db") as conn:
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM course_users WHERE cid = ? AND uid = ?", (course_id, user_id))
+        cursor.execute("DELETE FROM course_users WHERE cid = ? AND uid = ?", (cid, user_id))
         conn.commit()
         return redirect(url_for('list_courses', message='Successfully left the course!'))
         
 @app.route('/deletecourse', methods=['GET', 'POST'])
 def delete_course():
     if request.method == 'POST':
-        course_id = request.form['course_id']
+        cid = request.form['cid']
         with db.connect("./instance/users.db") as conn:
-            db.delete_course(conn, course_id)
+            db.delete_course(conn, cid)
 
         return redirect(url_for('success', message="Course deleted successfully!"))
     return render_template('/course-pages/deletecourse.html')
