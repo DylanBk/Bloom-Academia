@@ -12,7 +12,6 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
 # --- ERROR HANDLING ---
 
 @app.errorhandler(400) # bad request
@@ -50,35 +49,41 @@ def home():
 
 @app.route('/createcourse', methods=['GET', 'POST'])
 def create_course():
-    if request.method == 'POST':
-        if session:
-            authorID = session['user_id']
-            if 'course-img' not in request.files:
-                return redirect(request.url)
+    if not session or session.get('role') < 2:  # Authentication & Authorization
+        return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to create courses.", name=session.get('name'))
+    
+    if request.method == 'POST':  # Corrected method check
+        if 'course-img' not in request.files:
+            return redirect(request.url)
 
-            file = request.files['course-img']
-            if file and allowed_file(file.filename):
-                try:
-                    img_data = file.read()  # Read the file contents as bytes
-                    title = request.form['course-title']
-                    description = request.form['course-description']
+        file = request.files['course-img']
+        if file and allowed_file(file.filename):
+            try:
+                img_data = file.read()
+                title = request.form['course-title']
+                description = request.form['course-description']
+                authorID = session['user_id']
 
-                    with db.connect("././instance/users.db") as conn:
-                        cursor = conn.cursor()
-                        db.upload_course(conn, title, description, img_data, authorID)
-                        conn.commit()
-                        return redirect(url_for('success', message='Course uploaded successfully!'))
-                except db.DatabaseError as db_err:
-                    return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err))
-                except Exception as e:
-                    return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong.", error_subtitle=str(e))
-    return render_template('/course-pages/createcourse.html', name=name, role=role)
+                with db.connect("././instance/users.db") as conn:
+                    cursor = conn.cursor()
+                    db.upload_course(conn, title, description, img_data, authorID)
+                    conn.commit()
+                    return redirect(url_for('success', message='Course uploaded successfully!'), name=session.get('name'))
+
+            except db.DatabaseError as db_err:
+                return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err))
+
+            except Exception as e:
+                return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong.", error_subtitle=str(e))
+
+    return render_template('/course-pages/createcourse.html', name=session.get('name'))
 
 @app.route('/courses')
 def list_courses():
     try:
         with db.connect("./instance/users.db") as conn:
             courses = db.get_courses(conn)
+            name = session.get('name')
 
             # Convert binary image data to base64
             updated_courses = []
@@ -92,16 +97,20 @@ def list_courses():
                 updated_courses.append((title, description, img_base64, cid))
 
         message = request.args.get('message', '')
-        return render_template('/course-pages/courses.html', courses=updated_courses, message=message)
+        return render_template('/course-pages/courses.html', courses=updated_courses, message=message, name=name)
     except db.DatabaseError as db_err:
-        return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err))
+        return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err), name=name)
     except Exception as e:
-        return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong.", error_subtitle=str(e))
+        return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong.", error_subtitle=str(e), name=name)
     
 @app.route('/courses/<int:cid>')
 def view_course(cid):
+    if not session:  # Authentication & Authorization
+        return redirect(url_for('login'))
+    
     try:
         with db.connect("./instance/users.db") as conn:
+            name = session.get('name')
             course = db.get_course(conn, cid)
             tasks = db.get_tasks(conn, cid)
             title, description, img_data, cid, uid = course
@@ -110,17 +119,17 @@ def view_course(cid):
             else:
                 img_base64 = None
             if uid == session['user_id'] or db.check_admin(conn, session['user_id']):
-                return render_template('/course-pages/course.html', title=title, description=description, img_base64=img_data, cid=cid, tasks=tasks, isAuthor=True)
+                return render_template('/course-pages/course.html', title=title, description=description, img_base64=img_data, cid=cid, tasks=tasks, isAuthor=True, name=name)
             else:
-                return render_template('/course-pages/course.html', title=title, description=description, img_base64=img_base64, cid=cid, tasks=tasks, isAuthor=False)
+                return render_template('/course-pages/course.html', title=title, description=description, img_base64=img_base64, cid=cid, tasks=tasks, isAuthor=False, name=name)
     except db.DatabaseError as db_err:
-        return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err))
+        return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err), name=name)
     except Exception as e:
-        return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong.", error_subtitle=str(e))
+        return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong.", error_subtitle=str(e), name=name)
 
 @app.route('/add_task/<int:cid>', methods=['POST'])
 def add_task(cid):
-    if 'user_id' not in session:
+    if not session:
         return redirect(url_for('login'))
 
     task_title = request.form['task_title']
@@ -133,7 +142,7 @@ def add_task(cid):
 
 @app.route('/remove_task/<int:cid>', methods=['POST'])
 def remove_task(cid):
-    if 'user_id' not in session:
+    if not session:
         return redirect(url_for('login'))
 
     tid = request.form.get('tid')  # Get tid from the form
@@ -150,6 +159,7 @@ def search_course():
 
         with db.connect("./instance/users.db") as conn:
             courses = db.find_course(conn, query)
+            name = session.get('name')
 
         if courses:
             updated_courses = []
@@ -165,12 +175,14 @@ def search_course():
                 updated_courses.append(updated_course)
 
 
-            return render_template('/course-pages/courseresults.html', courses=updated_courses)
-        return render_template('/course-pages/courseresults.html', message="Course not found")
-    return render_template('/course-pages/courseresults.html', message="Please enter a search term")
+            return render_template('/course-pages/courseresults.html', courses=updated_courses, name=name)
+        return render_template('/course-pages/courseresults.html', message="Course not found", name=name)
+    return render_template('/course-pages/courseresults.html', message="Please enter a search term", name=name)
 
 @app.route('/admin/changerole', methods=['GET', 'POST'])
 def change_role():
+    if not session or session.get('role') < 3:  # Authentication & Authorization
+        return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to view this page.", name=session.get('name'))
     if request.method == 'POST':
         uid = request.form['uid']
         role = request.form['role']
@@ -183,7 +195,7 @@ def change_role():
 
 @app.route('/join_course/<int:cid>', methods=['POST'])
 def join_course(cid):
-    if 'user_id' not in session:
+    if not session:
         return redirect(url_for('login'))
 
     user_id = session['user_id']
@@ -202,7 +214,7 @@ def join_course(cid):
 
 @app.route('/leave_course/<int:cid>', methods=['POST'])
 def leave_course(cid):
-    if 'user_id' not in session:
+    if not session:
         return redirect(url_for('login'))
     user_id = session['user_id']
     
@@ -213,9 +225,10 @@ def leave_course(cid):
         return redirect(url_for('list_courses', message='Successfully left the course!'))
         
 @app.route('/deletecourse', methods=['GET', 'POST'])
-def delete_course():
+def delete_course(cid):
+    if not session or session.get('role') < 2:  # Authentication & Authorization
+        return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to delete courses.", name=session.get('name'))
     if request.method == 'POST':
-        cid = request.form['cid']
         with db.connect("./instance/users.db") as conn:
             db.delete_course(conn, cid)
 
@@ -227,16 +240,18 @@ def delete_course():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if session:
+        return render_template('error.html', error_type="Already Logged In", error_title="You are already logged in!", error_subtitle="Please log out and try again.", name=session.get('name'))
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
         name = request.form['name']
 
-        code = ""
-        for i in range(6):
-            num = random.randit(0,9)
-            code = code + num
-        print(code)
+        # code = ""
+        # for i in range(6):
+        #     num = random.randint(0,9)
+        #     code = code + num
+        # print(code)
 
         # check = '' # only create user once verified
         # if check:
@@ -249,7 +264,7 @@ def register():
 
 @app.route('/profile')
 def profile():
-    if 'user_id' not in session:
+    if not session:
         return redirect(url_for('login'))
 
     user_id = session['user_id']
@@ -266,6 +281,8 @@ def profile():
 
 @app.route('/searchuser', methods=['GET', 'POST'])
 def search_user():
+    if not session:
+        return redirect(url_for('login'))
     if request.method == 'POST':
         email = request.form['email']
         with db.connect("./instance/users.db") as conn:
@@ -278,6 +295,8 @@ def search_user():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if session:
+        return render_template('error.html', error_type="Already Logged In", error_title="You are already logged in!", error_subtitle="Please log out and try again.", name=session.get('name'))
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
@@ -304,6 +323,32 @@ def logout():
 def success():
     message = request.args.get('message', 'Success!')  # Get message, default to "Success!"
     return render_template('/login-signup-pages/success.html', message=message)
+
+@app.route('/admin')
+def admin_dashboard():
+    if not session or session.get('role') != 3:
+        return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to access the admin dashboard.")
+    return render_template('admin-pages/dashboard.html')
+
+@app.route('/admin/delete_user/<int:uid>', methods=['GET', 'POST'])
+def delete_user(uid):
+    if not session or session.get('role') != 3:
+        return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to access the admin dashboard.")
+    with db.connect("././instance/users.db") as conn:
+        db.delete_user(conn, uid)
+
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/manage_users', methods=['GET', 'POST'])
+def manage_users():
+    if not session or session.get('role') != 3:
+        return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to access the admin dashboard.")
+    with db.connect("././instance/users.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users ORDER BY uid DESC")
+        users = cursor.fetchall()
+
+    return render_template('admin-pages/manage_users.html', users=users)
 
 
 # --- MAIN PROGRAM ---

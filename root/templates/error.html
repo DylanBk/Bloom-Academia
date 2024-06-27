@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bloom Academia | {{ error_type }}</title>
@@ -12,17 +12,17 @@
         <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
         <nav>
 
-            <form id="search-bar" method="POST" action="{{ url_for('search_course') }}"> <!-- send form data to python to check if input exists in db -->
+            <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}"> <!-- send form data to python to check if input exists in db -->
                 <input id="search-bar-input" type="text" name="search-bar-input" placeholder="Search for a course..."> <!-- search query -->
                 <button id="search-bar-btn" type="submit" name="search-bar-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32"><desc>Search Streamline Icon: https://streamlinehq.com</desc><path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path><path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path></svg></button> <!-- press to search -->
             </form>
 
-            <a href="{{ url_for('profile') }}">In Progress</a>
-            <a href="{{ url_for('list_courses') }}">Courses</a>
+            <a class="nav-item" href="{{ url_for('profile') }}">In Progress</a>
+            <a class="nav-item" href="{{ url_for('list_courses') }}">Courses</a>
             {% if name %}
-                <a href="{{ url_for('profile') }}">Account</a>
+                <a class="nav-item" href="{{ url_for('profile') }}">Account</a>
             {% else %}
-                <a href="{{ 'login' }}">Login</a>
+                <a class="nav-item" href="{{ 'login' }}">Login</a>
             {% endif %}
 
         </nav>

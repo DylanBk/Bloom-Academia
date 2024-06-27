@@ -1,19 +1,20 @@
+
 :root {
     --bg: #FBFBFE;
-    --primary: #1DAADA;
+    --primary: #25487D;
     --secondary: #006F9B;
     --accent: #00B64C;
 
     @media (prefers-contrast) and (not (forced-colors)) { /* colour scheme for people with contrast mode on & forced colours off */
-        --bg: #FFFFFF
-        --primary: #1DAADA;
+        --bg: #FFFFFF;
+        --primary: #25487D;
         --secondary: #0836A2; 
         --accent: #03d85c;
     }
 
     @media (prefers-color-scheme: dark) {
         --bg: #141414;
-        --primary: #1DB1E2;
+        --primary: #25487D;
         --secondary: #0087BD;
         --accent: #00B64C;
     }
@@ -51,6 +52,7 @@ header {
     justify-content: space-around;
     padding: 3rem 1rem;
     box-shadow: 0 0 10px 0 black;
+    background-color: #25487D;
 }
 
 nav {
@@ -65,8 +67,20 @@ nav a {
 }
 
 .nav-item {
-    margin: 0 1rem;
+    margin: 0 1.4rem;
+    color: white;
+    font-weight: bold;
+    font-size: larger;
 }
+
+
+.navcontainer { 
+    display: flex; 
+    flex-direction: column; 
+    min-height: 100vh; 
+    box-shadow: 0 0 10px rgba(103, 224, 21, 0.45); /* Add drop shadow */
+} 
+
 
 
 #search-bar {
@@ -77,6 +91,7 @@ nav a {
 
 #search-bar-input {
     padding: 1rem;
+    padding-right: 20rem;
     border: none;
     border-radius: 10px 0 0 10px;
     background-color: #f0f0f0;
@@ -139,6 +154,10 @@ nav a {
     color: white;
 }
 
+h1 {
+    color: white;
+    font-family: ui-monospace;
+}
 #home-options {
     display: flex;
     flex-direction: column;
@@ -162,6 +181,126 @@ nav a {
     background-color: var(--secondary);
 }
 
+.LoginContent {
+    display: flex;
+    background-color: white;
+    margin-left: auto;
+    margin-right: auto;
+    width: 40vw;
+    height: 600px;
+    border-radius: 100px;
+    border-width: 15px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    border-color: #0087BD;
+    filter: drop-shadow(0px 0px 10px var(--secondary)); /* Add backdrop using drop-shadow */
+}
+.LoginForm {
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    width: 40vw;
+    height: 400px;
+    border-radius: 100px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+
+
+#courses-wrapper {
+    position: relative;
+    display: flex;
+    gap: 1.5rem;
+    margin: 2rem;
+}
+
+.course-item {
+    height: 22rem;
+    width: 280px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 10px;
+    background: #efeff3;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+.course-item a {
+    color: black;
+}
+
+.course-item:hover {
+    scale: 1.1;
+    box-shadow: 0 0 10px black;
+}
+
 .course-image {
-    height: 100px;
+    height: 144px;
+    width: 256px;
+    border-radius: 10px 10px 0 0 ;
+    box-shadow: 0 0 10px black;
+}
+
+.course-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.course-options {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.join-course-button, .leave-course-button {
+    padding: 5px;
+    border: none;
+    border-radius: 5px;
+    background: var(--secondary);
+    color: white;
+    transition: 0.2s;
+}
+
+.join-course-button:hover, .leave-course-button:hover {
+    background: var(--primary);
+}
+
+footer {
+    display: flex; 
+    position: fixed; 
+    bottom: 0; 
+    width: 100%; 
+    background-color: var(--primary);
+    height: 4rem;
+
+}
+footer a {
+    color: white;
+}
+
+footer li {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding-left: 2rem;
+    width: 100%;
+    
+}
+
+footer li a {
+    color: white;
+    font-size: xx-large;
+    cursor: pointer;
+
+}
+
+footer li a:hover {
+    text-decoration: underline;
 }

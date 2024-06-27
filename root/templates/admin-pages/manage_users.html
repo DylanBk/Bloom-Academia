@@ -1,13 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+    <title>Manage Users</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Course</title>
+    <style>
+        body { font-family: sans-serif; }
+        .container { width: 80%; margin: 20px auto; }
+        h1 { text-align: center; }
+        .user-box { border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; }
+    </style>
 </head>
 <body>
-
     <header>
         <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
         <nav>
@@ -22,24 +25,26 @@
             {% if name %}
                 <a class="nav-item" href="{{ url_for('profile') }}">Account</a>
             {% else %}
-                <a class="nav-item" href="{{ 'login' }}">Login</a>
+                <a class="nav-item" href="{{ url_for('login') }}">Login</a>
             {% endif %}
 
         </nav>
     </header>
+    <div class="container">
+        <h1>Manage Users</h1>
 
-    <h2>Upload a Course</h2>
-    <form action="{{ url_for('create_course') }}" method="post" enctype="multipart/form-data"> 
-        <label for="course-title">Course Title:</label>
-        <input id="course-title" type="text" name="course-title" maxlength="30"><br><br>
-
-        <label for="course-description">Course Description (Basic):</label>
-        <input id="course-description" type="text" name="course-description" maxlength="100"><br><br>
-
-        <label for="course-img">Course Image (16:9):</label>
-        <input id="course-img" type="file" name="course-img" accept="image/*"><br><br>
-
-        <button type="submit">Upload Course</button>
-    </form>
+        <ol reversed>
+        {% for user in users %}
+            <li class="user-box">
+                <h3>User ID: {{ user[0] }}</h3> 
+                <p><strong>Name:</strong> {{ user[1] }}</p>
+                <p><strong>Email:</strong> {{ user[2] }}</p>
+                <p><strong>Role:</strong> {{ user[4] }}</p> 
+                <a href="{{ url_for('change_role', uid=user[0]) }}" class="button">Edit</a>
+                <a href="{{ url_for('delete_user', uid=user[0]) }}" class="button" onclick="return confirm('Are you sure you want to delete this user?')">Delete</a>
+            </li>
+        {% endfor %}
+        </ol>
+    </div>
 </body>
 </html>

@@ -52,16 +52,15 @@ def get_user_courses(conn, user_id):
     return c.fetchall()
 
 # --- USER FUNCTIONS --
-
 def create_user(conn, name, email, password, role):
     c = conn.cursor()
     password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     c.execute("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)", (name, email, password, role))
     return c.lastrowid
 
-def delete_user(conn, email):
+def delete_user(conn, uid):
     c = conn.cursor()
-    c.execute("DELETE FROM users WHERE email = ?", (email,))
+    c.execute("DELETE FROM users WHERE uid = ?", (uid,))
     return c.rowcount
 
 def find_user(conn, email):
@@ -137,9 +136,9 @@ def find_course(conn, cname):
     c.execute("SELECT cname, description, course_image, cid FROM courses WHERE cname = ?", (cname,))
     return c.fetchall()
 
-def change_role(conn, user_id, new_role):
+def change_role(conn, uid, new_role):
     c = conn.cursor()
-    c.execute("UPDATE users SET role = ? WHERE uid = ?", (new_role, user_id))
+    c.execute("UPDATE users SET role = ? WHERE uid = ?", (new_role, uid))
     return c.rowcount
 
 def check_admin(conn, user_id):

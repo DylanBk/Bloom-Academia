@@ -1,13 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+    <title>Admin Dashboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Course</title>
+    <style>
+        /* Basic Styling (Customize as needed) */
+        body { font-family: sans-serif; }
+        .container { width: 80%; margin: 20px auto; }
+        h1 { text-align: center; }
+        .info-box { border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; }
+        .button { display: inline-block; padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; }
+    </style>
 </head>
 <body>
-
     <header>
         <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
         <nav>
@@ -27,19 +32,29 @@
 
         </nav>
     </header>
+    <div class="container">
 
-    <h2>Upload a Course</h2>
-    <form action="{{ url_for('create_course') }}" method="post" enctype="multipart/form-data"> 
-        <label for="course-title">Course Title:</label>
-        <input id="course-title" type="text" name="course-title" maxlength="30"><br><br>
+        <div class="info-box">
+            <h2>Your Information:</h2>
+            {% if session.get('name') %}
+                <p><strong>Name:</strong> {{ session.get('name') }}</p>
+            {% endif %}
 
-        <label for="course-description">Course Description (Basic):</label>
-        <input id="course-description" type="text" name="course-description" maxlength="100"><br><br>
+            {% if session.get('email') %}
+                <p><strong>Email:</strong> {{ session.get('email') }}</p>
+            {% endif %}
 
-        <label for="course-img">Course Image (16:9):</label>
-        <input id="course-img" type="file" name="course-img" accept="image/*"><br><br>
+            {% if session.get('user_id') %}
+                <p><strong>User ID:</strong> {{ session.get('user_id') }}</p>
+            {% endif %}
+        </div>
 
-        <button type="submit">Upload Course</button>
-    </form>
+        <div class="info-box">
+            <h2>Admin Actions:</h2>
+            <a href="{{ url_for('create_course') }}" class="button">Create New Course</a>
+            <a href="{{url_for('manage_users')}}" class="button">Manage Users</a>
+            <a href="" class="button">View Reports</a>
+        </div>
+    </div>
 </body>
 </html>

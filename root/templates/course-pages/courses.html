@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Courses List</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/courses.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
 
@@ -12,17 +12,17 @@
         <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
         <nav>
 
-            <form id="search-bar" method="POST" action="{{ url_for('search_course') }}"> <!-- send form data to python to check if input exists in db -->
+            <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}"> <!-- send form data to python to check if input exists in db -->
                 <input id="search-bar-input" type="text" name="search-bar-input" placeholder="Search for a course..."> <!-- search query -->
                 <button id="search-bar-btn" type="submit" name="search-bar-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32"><desc>Search Streamline Icon: https://streamlinehq.com</desc><path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path><path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path></svg></button> <!-- press to search -->
             </form>
 
-            <a href="{{ url_for('profile') }}">In Progress</a>
-            <a href="{{ url_for('list_courses') }}">Courses</a>
+            <a class="nav-item" href="{{ url_for('profile') }}">In Progress</a>
+            <a class="nav-item" href="{{ url_for('list_courses') }}">Courses</a>
             {% if name %}
-                <a href="{{ url_for('profile') }}">Account</a>
+                <a class="nav-item" href="{{ url_for('profile') }}">Account</a>
             {% else %}
-                <a href="{{ 'login' }}">Login</a>
+                <a class="nav-item" href="{{ 'login' }}">Login</a>
             {% endif %}
 
         </nav>
@@ -33,25 +33,29 @@
         {% if message %}
             <p>{{ message }}</p>
         {% endif %}
+        <div id="courses-wrapper">
         {% for course in courses %}
             <li class="course-item">
-                {% if course[2] %}
-                    <img src="data:image/jpeg;base64,{{ course[2] }}" alt="{{ course[0] }}" class="course-image"/>
-                {% endif %}
                 <a class="course-container-link" href="{{ url_for('view_course', cid=course[3]) }}">
-                    <div class="course-container">
+                    {% if course[2] %}
+                        <img src="data:image/jpeg;base64,{{ course[2] }}" alt="{{ course[0] }}" class="course-image"/>
+                    {% endif %}
+                    <div class="course-text">
                         <h2 class="course-title">{{ course[0] }}</h2>
                         <p class="course-description">{{ course[1] }}</p>
-                        <form action="{{ url_for('join_course', cid=course[3]) }}" method="post">
-                            <button type="submit" class="join-course-button">Join Course</button>
-                        </form>
-                        <form action="{{ url_for('leave_course', cid=course[3]) }}" method="post">
-                            <button type="submit" class="leave-course-button">Leave Course</button>
-                        </form>
+                        <div class="course-options">
+                            <form action="{{ url_for('join_course', cid=course[3]) }}" method="post">
+                                <button type="submit" class="join-course-button">Join Course</button>
+                            </form>
+                            <form action="{{ url_for('leave_course', cid=course[3]) }}" method="post">
+                                <button type="submit" class="leave-course-button">Leave Course</button>
+                            </form>
+                        </div>
                     </div>
                 </a>
             </li>
         {% endfor %}
+        </div> <!-- end of #courses-wrapper -->
     </ul>
 </body>
 </html>

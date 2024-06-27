@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/style.css') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Home</title>
 </head>
 <body>
     <header>
-        <h1>Bloom Academia</h1>
+        <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
         <nav>
 
             <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}"> <!-- send form data to python to check if input exists in db -->
@@ -40,6 +40,10 @@
                 {% else %}
                     <p>Please <button><a href="{{ url_for('login') }}">Login</a></button> to continue.</p>
                 {% endif %}
+
+                {% if session.get('role') == 3 %}
+                    <button><a href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></button>
+                {% endif %}
                 
                 <button><a href="{{ url_for('list_courses') }}">View Courses</a></button>
             </div> <!-- end of #welcome-msg-btn-container -->
@@ -52,19 +56,16 @@
             <button class="home-options-btn"><a href="{{ url_for('list_courses') }}">View Courses</a></button>
         </div> <!-- end of #home-options -->
 
-    </div> <!-- end of #main-wrapper -->
+        <footer>
+            <li>
+                <a href="{{ url_for('profile') }}" >Account</a>
+                <a href="{{ url_for('home') }}" >About Us</a>
+                <a href="{{ url_for('home') }}" >Become an Author</a>
+            </li>
+        </footer>
 
-    <footer>
-        <div id="footer-section1">
-            <!--list of links and stuff-->
-        </div>
-        <div id="footer-section2">
-            <!--list of links and stuff-->
-        </div>
-        <div id="footer-section3">
-            <!--list of links and stuff-->
-        </div>
-    </footer>
+    </div> <!-- end of #main-wrapper -->
+    
 
 </body>
 </html>

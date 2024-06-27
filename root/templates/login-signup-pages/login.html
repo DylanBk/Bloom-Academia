@@ -14,32 +14,51 @@
         <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
         <nav>
 
-            <form id="search-bar" method="POST" action="{{ url_for('search_course') }}"> <!-- send form data to python to check if input exists in db -->
+            <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}"> <!-- send form data to python to check if input exists in db -->
                 <input id="search-bar-input" type="text" name="search-bar-input" placeholder="Search for a course..."> <!-- search query -->
                 <button id="search-bar-btn" type="submit" name="search-bar-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32"><desc>Search Streamline Icon: https://streamlinehq.com</desc><path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path><path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path></svg></button> <!-- press to search -->
             </form>
 
-            <a href="{{ url_for('profile') }}">In Progress</a>
-            <a href="{{ url_for('list_courses') }}">Courses</a>
+            <a class="nav-item" href="{{ url_for('profile') }}">In Progress</a>
+            <a class="nav-item" href="{{ url_for('list_courses') }}">Courses</a>
             {% if name %}
-                <a href="{{ url_for('profile') }}">Account</a>
+                <a class="nav-item" href="{{ url_for('profile') }}">Account</a>
             {% else %}
-                <a href="{{ 'login' }}">Login</a>
+                <a class="nav-item" href="{{ 'login' }}">Login</a>
             {% endif %}
 
         </nav>
     </header>
 
-    <form method="POST" action="{{ url_for('login') }}">
-        <p id="login-error-msg"></p>
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" required> <br>
+    <h2 style="text-align: center;">Login/Signup</h2>
+    <div class="LoginContent">
+        <div class="LoginForm"
+            <form method="POST" action="{{ url_for('login') }}">
+                <p id="login-error-msg"></p>
+                <label for="email">Email</label>
+                <input style="width: 350px;" type="email" id="email" name="email" required> <br>
+    
+                <label for="password">Password</label>
+                <input style="width: 350px;" type="password" id="password" name="password" required> <br>
+    
+                <input id="login-btn" type="submit" value="login">
+            </form>
 
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" required> <br>
+        <form id="signup-form" action="{{ url_for('register') }}" method="POST" onsubmit="return validateForm()">
+        
+            <p id="create-user-error-msg"></p>
+            <label for="email">Email:</label>
+            <input style="width: 350px;" id="email" name="email" required> <br>
+    
+            <label for="password">Password:</label>
+            <input style="width: 350px;" type="password" id="password" name="password" required> <br>
+            
+            <label for="name">Name:</label>
+            <input style="width: 350px;" type="text" id="name" name="name" required>
+            <button style="margin-bottom: 30px;" id="signup-btn" type="submit">Register</button>
+        </form>
+    </div>
 
-        <input id="login-btn" type="submit" value="login">
-    </form>
 
     {% if message %}
     <p style="color: red;">{{ message }}</p>
