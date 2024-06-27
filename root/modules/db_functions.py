@@ -96,9 +96,9 @@ def leave_course(conn, cid, user_id):
     return c.rowcount
 
 # --- COURSE FUNCTIONS ---
-def upload_course(conn, course_title, course_description, course_image):
+def upload_course(conn, course_title, course_description, course_image, uid):
     c = conn.cursor()
-    c.execute("INSERT INTO courses (cname, description, course_image) VALUES (?, ?, ?)", (course_title, course_description, course_image))
+    c.execute("INSERT INTO courses (cname, description, course_image, uid) VALUES (?, ?, ?, ?)", (course_title, course_description, course_image, uid))
     return c.lastrowid
 
 def delete_course(conn, cid):
@@ -113,7 +113,7 @@ def get_courses(conn):
 
 def get_course(conn, cid):
     c = conn.cursor()
-    c.execute("SELECT cname, description, course_image, cid FROM courses WHERE cid = ?", (cid,))
+    c.execute("SELECT cname, description, course_image, cid, uid FROM courses WHERE cid = ?", (cid,))
     return c.fetchone()
 
 # --- TASK FUNCTIONS ---
@@ -122,9 +122,9 @@ def add_task(conn, cid, task_title, task_description):
     c.execute("INSERT INTO course_tasks (cid, task_title, task_description) VALUES (?, ?, ?)", (cid, task_title, task_description))
     return c.lastrowid
 
-def remove_task(conn, cid, task_title):
+def remove_task(conn, cid, tid):
     c = conn.cursor()
-    c.execute("DELETE FROM course_tasks WHERE cid = ? AND task_title = ?", (cid, task_title))
+    c.execute("DELETE FROM course_tasks WHERE cid = ? AND tid = ?", (cid, tid))
     return c.rowcount
 
 def get_tasks(conn, cid):
@@ -136,6 +136,19 @@ def find_course(conn, cname):
     c = conn.cursor()
     c.execute("SELECT cname, description, course_image, cid FROM courses WHERE cname = ?", (cname,))
     return c.fetchall()
+
+def change_role(conn, user_id, new_role):
+    c = conn.cursor()
+    c.execute("UPDATE users SET role = ? WHERE uid = ?", (new_role, user_id))
+    return c.rowcount
+
+def check_admin(conn, user_id):
+    c = conn.cursor()
+    c.execute("SELECT role FROM users WHERE uid = ?", (user_id,))
+    if c.fetchone()[0] == 3:
+        return True
+    else:
+        return False
 
 # --- DATABASE CREATION FUNCTION ---
 def create():
@@ -154,7 +167,7 @@ def create():
         # -- USERS -- (CREATE USERS TABLE)
         create_table(connection, "users", ["uid INTEGER PRIMARY KEY AUTOINCREMENT", "name TEXT NOT NULL", "email TEXT UNIQUE", "password TEXT NOT NULL", "role INTEGER"])
         # -- COURSES -- (CREATE COURSES & COURSE_USERS TABLES)
-        create_table(connection, "courses", ["cid INTEGER PRIMARY KEY AUTOINCREMENT", "cname TEXT", "description TEXT", "course_image BLOB"])
+        create_table(connection, "courses", ["cid INTEGER PRIMARY KEY AUTOINCREMENT", "cname TEXT", "description TEXT", "course_image BLOB", "uid INTEGER REFERENCES users(uid)"])
         create_table(connection, "course_users", ["cid INTEGER REFERENCES courses(cid)", "uid INTEGER REFERENCES users(uid)", "CUID INTEGER PRIMARY KEY AUTOINCREMENT"])
         create_table(connection, "course_tasks", ["tid INTEGER PRIMARY KEY AUTOINCREMENT", "cid INTEGER REFERENCES courses(cid)", "task_title TEXT", "task_description TEXT", "completed INTEGER"])
         create_table(connection, "users_tasks", ["tid INTEGER REFERENCES course_tasks(tid)", "uid INTEGER REFERENCES users(uid)", "TUID INTEGER PRIMARY KEY AUTOINCREMENT"])

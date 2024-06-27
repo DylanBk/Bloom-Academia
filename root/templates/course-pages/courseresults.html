@@ -7,7 +7,7 @@
 <body>
 
     <header>
-        <a href="{{ url_for('home') }}"><h1>Welcome to Bloom Academia</h1></a>
+        <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
         <nav>
 
             <form id="search-bar" method="POST" action="{{ url_for('search_course') }}"> <!-- send form data to python to check if input exists in db -->
@@ -33,11 +33,8 @@
             <p>Description: {{ course[1] }}</p>
             <img class="course-image" src="data:image/jpeg;base64,{{ course[2] }}" alt="{{ course[0] }}">
         {% endfor %}
-
-        <a href="{{ url_for('search_course') }}">Search Again</a>
     {% elif message %}
         <p>{{ message }}</p>
-        <a href="{{ url_for('search_course') }}">Search Again</a>
     {% endif %}
 </body>
 </html>

@@ -51,26 +51,28 @@ def home():
 @app.route('/createcourse', methods=['GET', 'POST'])
 def create_course():
     if request.method == 'POST':
-        if 'course-img' not in request.files:
-            return redirect(request.url)
+        if session:
+            authorID = session['user_id']
+            if 'course-img' not in request.files:
+                return redirect(request.url)
 
-        file = request.files['course-img']
-        if file and allowed_file(file.filename):
-            try:
-                img_data = file.read()  # Read the file contents as bytes
-                title = request.form['course-title']
-                description = request.form['course-description']
+            file = request.files['course-img']
+            if file and allowed_file(file.filename):
+                try:
+                    img_data = file.read()  # Read the file contents as bytes
+                    title = request.form['course-title']
+                    description = request.form['course-description']
 
-                with db.connect("././instance/users.db") as conn:
-                    cursor = conn.cursor()
-                    db.upload_course(conn, title, description, img_data)
-                    conn.commit()
-                    return redirect(url_for('success', message='Course uploaded successfully!'))
-            except db.DatabaseError as db_err:
-                return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err))
-            except Exception as e:
-                return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong.", error_subtitle=str(e))
-    return render_template('/course-pages/createcourse.html')
+                    with db.connect("././instance/users.db") as conn:
+                        cursor = conn.cursor()
+                        db.upload_course(conn, title, description, img_data, authorID)
+                        conn.commit()
+                        return redirect(url_for('success', message='Course uploaded successfully!'))
+                except db.DatabaseError as db_err:
+                    return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err))
+                except Exception as e:
+                    return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong.", error_subtitle=str(e))
+    return render_template('/course-pages/createcourse.html', name=name, role=role)
 
 @app.route('/courses')
 def list_courses():
@@ -102,12 +104,15 @@ def view_course(cid):
         with db.connect("./instance/users.db") as conn:
             course = db.get_course(conn, cid)
             tasks = db.get_tasks(conn, cid)
-            title, description, img_data, cid = course
+            title, description, img_data, cid, uid = course
             if img_data:
                 img_base64 = base64.b64encode(img_data).decode('utf-8')
             else:
                 img_base64 = None
-            return render_template('/course-pages/course.html', title=title, description=description, img_base64=img_base64, cid=cid, tasks=tasks)
+            if uid == session['user_id'] or db.check_admin(conn, session['user_id']):
+                return render_template('/course-pages/course.html', title=title, description=description, img_base64=img_data, cid=cid, tasks=tasks, isAuthor=True)
+            else:
+                return render_template('/course-pages/course.html', title=title, description=description, img_base64=img_base64, cid=cid, tasks=tasks, isAuthor=False)
     except db.DatabaseError as db_err:
         return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err))
     except Exception as e:
@@ -128,14 +133,13 @@ def add_task(cid):
 
 @app.route('/remove_task/<int:cid>', methods=['POST'])
 def remove_task(cid):
-    if request.method == 'POST':
-        if 'user_id' not in session:
-            return redirect(url_for('login'))
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
 
-        task_title = request.form['task_title']
-
+    tid = request.form.get('tid')  # Get tid from the form
+    if tid is not None:  # Check if tid is provided
         with db.connect("./instance/users.db") as conn:
-            db.remove_task(conn, cid, task_title)
+            db.remove_task(conn, cid, tid)
 
     return redirect(url_for('view_course', cid=cid))
 
@@ -146,13 +150,12 @@ def search_course():
 
         with db.connect("./instance/users.db") as conn:
             courses = db.find_course(conn, query)
-            print(type(courses))
 
         if courses:
             updated_courses = []
             for course in courses:
                 title, description, img_data, cid = course
-
+                print(title)
                 if img_data:
                     img_base64 = base64.b64encode(img_data).decode('utf-8')
                 else:
@@ -161,9 +164,22 @@ def search_course():
                 updated_course = ((title, description, img_base64, cid))
                 updated_courses.append(updated_course)
 
+
             return render_template('/course-pages/courseresults.html', courses=updated_courses)
         return render_template('/course-pages/courseresults.html', message="Course not found")
-    return render_template('/course-pages/course.html')
+    return render_template('/course-pages/courseresults.html', message="Please enter a search term")
+
+@app.route('/admin/changerole', methods=['GET', 'POST'])
+def change_role():
+    if request.method == 'POST':
+        uid = request.form['uid']
+        role = request.form['role']
+        with db.connect("./instance/users.db") as conn:
+            db.change_role(conn, uid, role)
+
+        return redirect(url_for('success', message="Role changed successfully!"))
+    return render_template('/admin-pages/changerole.html')
+
 
 @app.route('/join_course/<int:cid>', methods=['POST'])
 def join_course(cid):
@@ -216,6 +232,15 @@ def register():
         password = request.form['password']
         name = request.form['name']
 
+        code = ""
+        for i in range(6):
+            num = random.randit(0,9)
+            code = code + num
+        print(code)
+
+        # check = '' # only create user once verified
+        # if check:
+
         with db.connect("./instance/users.db") as conn:
             db.create_user(conn, name, email, password, role="1")
 
@@ -234,7 +259,7 @@ def profile():
         user_courses = db.get_user_courses(conn, user_id)
 
     name, email, role_id = user_profile
-    role_map = {1: 'user', 2: 'creator', 3: 'admin'}
+    role_map = {1: 'User', 2: 'Author', 3: 'Admin'}
     role = role_map.get(role_id, 'unknown')  # Map role ID to role name, default to 'unknown' if not found
 
     return render_template('profile.html', name=name, email=email, role=role, courses=user_courses)
