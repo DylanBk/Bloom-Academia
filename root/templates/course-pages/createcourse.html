@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload Course</title>
@@ -28,18 +29,38 @@
         </nav>
     </header>
 
-    <h2>Upload a Course</h2>
-    <form action="{{ url_for('create_course') }}" method="post" enctype="multipart/form-data"> 
-        <label for="course-title">Course Title:</label>
-        <input id="course-title" type="text" name="course-title" maxlength="30"><br><br>
-
-        <label for="course-description">Course Description (Basic):</label>
-        <input id="course-description" type="text" name="course-description" maxlength="100"><br><br>
-
-        <label for="course-img">Course Image (16:9):</label>
-        <input id="course-img" type="file" name="course-img" accept="image/*"><br><br>
-
-        <button type="submit">Upload Course</button>
-    </form>
+    <div class="min-h-screen bg-zinc-100 p-6 flex flex-col items-center">
+        <h2 class="text-xl font-semibold text-zinc-800 mb-6">Create a New Course</h2>
+        <form class="w-full max-w-lg bg-white p-6 rounded-lg shadow-md" action="{{ url_for('create_course') }}" method="POST" enctype="multipart/form-data">
+          <div class="mb-4">
+            <label class="block text-zinc-700 text-sm font-bold mb-2" for="course-title"> Course Title </label>
+            <input
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-zinc-700 leading-tight focus:outline-none focus:shadow-outline"
+              id="course-title"
+              type="text"
+              maxlength="30"
+              name="course-title"
+              placeholder="Enter course title"
+            />
+          </div>
+          <div class="mb-4">
+            <label class="block text-zinc-700 text-sm font-bold mb-2" for="course-description"> Course Description </label>
+            <textarea
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-zinc-700 leading-tight focus:outline-none focus:shadow-outline"
+              id="course-description"
+              maxlength="100"
+              name="course-description"
+              placeholder="Enter course description"
+            ></textarea>
+          </div>
+          <div class="mb-4">
+            <label class="block text-zinc-700 text-sm font-bold mb-2" for="course-image"> Course Image </label>
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-zinc-700 leading-tight focus:outline-none focus:shadow-outline" id="course-img" name="course-img" type="file" accept="image/*" />
+          </div>
+          <div class="flex items-center justify-between">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Create Course</button>
+          </div>
+        </form>
+      </div>
 </body>
 </html>

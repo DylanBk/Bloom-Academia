@@ -2,6 +2,7 @@
 <html>
 <head>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
     <title>Success!</title>
 </head>
 <body>
@@ -26,6 +27,8 @@
         </nav>
     </header>
 
-    <h1>{{ message }}</h1> 
+    <div class="mt-6 p-4 bg-green-100 text-green-700 rounded-lg items-center justify-center flex flex-col">
+        <p>{{ message }}</p>
+      </div>
 </body>
 </html>

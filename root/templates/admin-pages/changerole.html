@@ -25,16 +25,16 @@
             </nav>
         </header>
         <div class="flex items-center justify-center min-h-screen bg-background text-primary-foreground">
-            <form class="max-w-md w-full bg-card shadow-lg rounded-lg overflow-hidden" action="{{url_for('change_role')}}" method="POST">
+            <form class="max-w-md w-full bg-card shadow-lg rounded-lg overflow-hidden" action="{{url_for('change_role', uid=uid)}}" method="POST">
               <div class="px-6 py-4">
                 <input type="hidden" name="uid" value="{{ uid }}">
                 <div class="font-bold text-lg mb-2">Change User Role</div>
                 <div class="mb-4">
                   <label for="role" class="block text-sm font-medium text-secondary-foreground">Select Role</label>
                   <select id="role" name="role" class="mt-1 block w-full py-2 px-3 border border-input bg-input text-primary rounded-md focus:outline-none focus:ring focus:ring-primary">
-                    <option value="user">User</option>
-                    <option value="author">Author</option>
-                    <option value="admin">Admin</option>
+                    <option value="User">User</option>
+                    <option value="Author">Author</option>
+                    <option value="Admin">Admin</option>
                   </select>
                 </div>
                 <button type="submit" class="w-full bg-neutral-700 hover:bg-neutral-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring focus:ring-primary">Change Role</button>

@@ -141,10 +141,15 @@ def change_role(conn, uid, new_role):
     c.execute("UPDATE users SET role = ? WHERE uid = ?", (new_role, uid))
     return c.rowcount
 
+def default_admin(conn):
+    c = conn.cursor()
+    c.execute("UPDATE users SET role = 'Admin' WHERE email = 'atanas.kyurkchiev.004@accesscreative.ac.uk'")
+    return c.rowcount
+
 
 # --- DATABASE CREATION FUNCTION ---
 def create():
-    db_path = "./instance/users.db"
+    db_path = "./root/instance/users.db"
     db = db_exists(db_path)
     if db:
         print("Database already exists.")
