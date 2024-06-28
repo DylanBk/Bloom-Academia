@@ -28,10 +28,9 @@
         </nav>
     </header>
 
-    <h2 style="text-align: center;">Login/Signup</h2>
+    <h2 style="text-align: center;">Register</h2>
 
-    <form class="RegisterContent" id="signup-form" action="{{ url_for('register') }}" method="post" onsubmit="return validateForm()">
-       
+    <form class="Register-content" id="signup-form" action="{{ url_for('register') }}" method="post" onsubmit="return validateForm()">
         <p id="create-user-error-msg"></p>
         <label for="email">Email:</label>
         <input style="width: 350px;" id="email" name="email" required>
@@ -41,7 +40,7 @@
         
         <label for="name">Name:</label>
         <input style="width: 350px;" type="text" id="name" name="name" required>
-        <button type="submit">Register</button>
+        <button class="home-options-btn" style="color: white;" type="submit">Register</button>
     </form>
 
 </body>

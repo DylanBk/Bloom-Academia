@@ -102,7 +102,7 @@ def upload_course(conn, course_title, course_description, course_image, uid):
 
 def delete_course(conn, cid):
     c = conn.cursor()
-    c.execute("DELETE FROM courses WHERE cid = ?", (cid))
+    c.execute("DELETE FROM courses WHERE cid = ?", (cid,))
     return c.rowcount
 
 def get_courses(conn):

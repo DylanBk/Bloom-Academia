@@ -9,7 +9,7 @@
 <body>
 
     <header>
-        <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
+        <a href="{{ url_for('home') }}"><h1>Bloom Academiaa</h1></a>
         <nav>
 
             <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}"> <!-- send form data to python to check if input exists in db -->
@@ -27,32 +27,33 @@
 
         </nav>
     </header>
-
-    <h1>{{ title }}</h1>
-
-    <div class="course-details">
-        {% if img_base64 %}
-            <img src="data:image/jpeg;base64,{{ img_base64 }}" alt="{{ title }}" class="course-image"/>
-        {% endif %}
-        <p>{{ description }}</p> 
-    </div>
-
-    <h2>Tasks</h2>
-    <ul class="task-list">
-        {% for task in tasks %}
-            <li class="task-item">
-                <p>Title: {{ task[1] }}</p> <!-- Task Title -->
-                <p>Description: {{ task[2] }}</p> <!-- Task Description -->
-                {% if isAuthor %}
-                <form action="{{ url_for('remove_task', cid=cid, tid=task[0]) }}" method="post">
-                    <input type="hidden" name="tid" value="{{ task[0] }}">
-                    <button type="submit" class="remove-task-button">Remove Task</button>
-                </form>
+    <div class="Course-content">
+        <h1>{{ title }}</h1>
+        <div class="course-details">
+            <p class="course-description">{{ description }}</p>
+            <div class="course-image-container">
+                {% if img_base64 %}
+                    <img src="data:image/jpeg;base64,{{ img_base64 }}" alt="{{ title }}" class="course-image"/>
                 {% endif %}
-            </li>
-        {% endfor %}
-    </ul>
+            </div>
+        </div>
 
+        <h2>Tasks</h2>
+        <ul class="task-list">
+            {% for task in tasks %}
+                <li class="task-item">
+                    <p>Title: {{ task[1] }}</p> <!-- Task Title -->
+                    <p>Description: {{ task[2] }}</p> <!-- Task Description -->
+                    {% if isAuthor %}
+                    <form action="{{ url_for('remove_task', cid=cid, tid=task[0]) }}" method="post">
+                        <input type="hidden" name="tid" value="{{ task[0] }}">
+                        <button type="submit" class="remove-task-button">Remove Task</button>
+                    </form>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
     {% if isAuthor %}
     <form class="task-form" action="{{ url_for('add_task', cid=cid) }}" method="post">
         <input type="text" name="task_title" placeholder="New Task Title" required>
@@ -60,7 +61,7 @@
         <button type="submit">Add Task</button>
     </form>
 
-        <form class="remove-course" action="{{ url_for('delete_course', cid=cid, )}}" method="post">
+    <form class="remove-course" action="{{ url_for('delete_course', cid=cid ) }}" method="post">
             <button type="submit">Remove Course</button>
         </form>
     {% endif %}

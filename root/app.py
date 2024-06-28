@@ -68,7 +68,7 @@ def create_course():
                     cursor = conn.cursor()
                     db.upload_course(conn, title, description, img_data, authorID)
                     conn.commit()
-                    return redirect(url_for('success', message='Course uploaded successfully!'), name=session.get('name'))
+                    return redirect(url_for('success', message='Course uploaded successfully!', name=session.get('name')))
 
             except db.DatabaseError as db_err:
                 return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err))
@@ -224,14 +224,13 @@ def leave_course(cid):
         conn.commit()
         return redirect(url_for('list_courses', message='Successfully left the course!'))
         
-@app.route('/deletecourse', methods=['GET', 'POST'])
+@app.route('/deletecourse/<int:cid>', methods=['GET', 'POST'])
 def delete_course(cid):
     if not session or session.get('role') < 2:  # Authentication & Authorization
         return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to delete courses.", name=session.get('name'))
     if request.method == 'POST':
         with db.connect("./instance/users.db") as conn:
             db.delete_course(conn, cid)
-
         return redirect(url_for('success', message="Course deleted successfully!"))
     return render_template('/course-pages/deletecourse.html')
 
