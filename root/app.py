@@ -44,12 +44,17 @@ def home():
     name = session.get('name')
     return render_template('index.html', name=name)
 
+@app.route('/aboutus')
+@app.route('/about')
+def about():
+    return render_template('about-us.html')
+
 
 # --- COURSE ROUTES ---
 
 @app.route('/createcourse', methods=['GET', 'POST'])
 def create_course():
-    if not session or session.get('role') < 2:  # Authentication & Authorization
+    if not session or session.get('role') != 'Author' or session.get('role') != 'Admin':  # Authentication & Authorization
         return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to create courses.", name=session.get('name'))
     
     if request.method == 'POST':  # Corrected method check
@@ -179,19 +184,18 @@ def search_course():
         return render_template('/course-pages/courseresults.html', message="Course not found", name=name)
     return render_template('/course-pages/courseresults.html', message="Please enter a search term", name=name)
 
-@app.route('/admin/changerole', methods=['GET', 'POST'])
-def change_role():
-    if not session or session.get('role') < 3:  # Authentication & Authorization
+@app.route('/admin/changerole/<int:uid>', methods=['GET', 'POST'])
+def change_role(uid):
+    if not session or session.get('role') != 'Admin': # Authentication & Authorization
         return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to view this page.", name=session.get('name'))
     if request.method == 'POST':
-        uid = request.form['uid']
         role = request.form['role']
+        uid = request.args.get('uid')
         with db.connect("./instance/users.db") as conn:
             db.change_role(conn, uid, role)
 
         return redirect(url_for('success', message="Role changed successfully!"))
-    return render_template('/admin-pages/changerole.html')
-
+    return render_template('/admin-pages/changerole.html', uid=uid)
 
 @app.route('/join_course/<int:cid>', methods=['POST'])
 def join_course(cid):
@@ -226,7 +230,7 @@ def leave_course(cid):
         
 @app.route('/deletecourse/<int:cid>', methods=['GET', 'POST'])
 def delete_course(cid):
-    if not session or session.get('role') < 2:  # Authentication & Authorization
+    if not session or session.get('role') != 'Author' or session.get('role') != 'Admin':  # Authentication & Authorization
         return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to delete courses.", name=session.get('name'))
     if request.method == 'POST':
         with db.connect("./instance/users.db") as conn:
@@ -256,7 +260,7 @@ def register():
         # if check:
 
         with db.connect("./instance/users.db") as conn:
-            db.create_user(conn, name, email, password, role="1")
+            db.create_user(conn, name, email, password, role="User")
 
         return redirect(url_for('success', message="User created successfully!"))
     return render_template('/login-signup-pages/register.html')
@@ -270,13 +274,21 @@ def profile():
 
     with db.connect("./instance/users.db") as conn:
         user_profile = db.get_user_profile(conn, user_id)
-        user_courses = db.get_user_courses(conn, user_id)
+        courses = db.get_user_courses(conn, user_id)
 
-    name, email, role_id = user_profile
-    role_map = {1: 'User', 2: 'Author', 3: 'Admin'}
-    role = role_map.get(role_id, 'unknown')  # Map role ID to role name, default to 'unknown' if not found
+    name, email, role = user_profile
+    # Convert binary image data to base64
+    updated_courses = []
+    for course in courses:
+        title, description, img_data, cid = course
 
-    return render_template('profile.html', name=name, email=email, role=role, courses=user_courses)
+        if img_data:
+            img_base64 = base64.b64encode(img_data).decode('utf-8')
+        else:
+            img_base64 = None
+        updated_courses.append((title, description, img_base64, cid))
+
+    return render_template('profile.html', name=name, email=email, role=role, courses=updated_courses)
 
 @app.route('/searchuser', methods=['GET', 'POST'])
 def search_user():
@@ -307,6 +319,7 @@ def login():
             session['user_id'] = user[0]  # 'id' is at index 0 in the tuple
             session['role'] = user[4]  # 'role' is at index 4 in the tuple
             session['name'] = user[1]  # 'name' is at index 1 in the tuple
+            session['email'] = user[2]  # 'email' is at index 2 in the tuple
             return redirect(url_for('home'))
         return render_template('/login-signup-pages/login.html', message="Invalid email or password")
     return render_template('/login-signup-pages/login.html')
@@ -324,31 +337,24 @@ def success():
     return render_template('/login-signup-pages/success.html', message=message)
 
 @app.route('/admin')
-def admin_dashboard():
-    if not session or session.get('role') != 3:
-        return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to access the admin dashboard.")
-    return render_template('admin-pages/dashboard.html')
-
-@app.route('/admin/delete_user/<int:uid>', methods=['GET', 'POST'])
-def delete_user(uid):
-    if not session or session.get('role') != 3:
-        return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to access the admin dashboard.")
-    with db.connect("././instance/users.db") as conn:
-        db.delete_user(conn, uid)
-
-    return redirect(url_for('admin_dashboard'))
-
-@app.route('/admin/manage_users', methods=['GET', 'POST'])
-def manage_users():
-    if not session or session.get('role') != 3:
+def admin():
+    if not session or session.get('role') != 'Admin' or session.get('email') != 'atanas.kyurkchiev.004@accesscreative.ac.uk':
         return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to access the admin dashboard.")
     with db.connect("././instance/users.db") as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users ORDER BY uid DESC")
         users = cursor.fetchall()
 
-    return render_template('admin-pages/manage_users.html', users=users)
+    return render_template('admin-pages/dashboard.html', users=users, name=session.get('name'))
 
+@app.route('/admin/delete_user/<int:uid>', methods=['GET', 'POST'])
+def delete_user(uid):
+    if not session or session.get('role') != 'Admin' or session.get('email') != 'atanas.kyurkchiev.004@accesscreative.ac.uk':
+        return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to access the admin dashboard.")
+    with db.connect("././instance/users.db") as conn:
+        db.delete_user(conn, uid)
+
+    return redirect(url_for('admin_dashboard'))
 
 # --- MAIN PROGRAM ---
 

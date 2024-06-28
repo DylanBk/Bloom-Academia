@@ -9,7 +9,7 @@
 <body>
 
     <header>
-        <a href="{{ url_for('home') }}"><h1>Bloom Academiaa</h1></a>
+        <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
         <nav>
 
             <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}"> <!-- send form data to python to check if input exists in db -->
@@ -28,22 +28,24 @@
         </nav>
     </header>
     <div class="Course-content">
-        <h1>{{ title }}</h1>
+        <div class="course-content-title">{{ title }}</div>
         <div class="course-details">
             <p class="course-description">{{ description }}</p>
-            <div class="course-image-container">
+            <div class="coursee-image-container">
                 {% if img_base64 %}
                     <img src="data:image/jpeg;base64,{{ img_base64 }}" alt="{{ title }}" class="course-image"/>
                 {% endif %}
             </div>
         </div>
-
-        <h2>Tasks</h2>
+        <hr class="Course-line">
         <ul class="task-list">
             {% for task in tasks %}
                 <li class="task-item">
                     <p>Title: {{ task[1] }}</p> <!-- Task Title -->
                     <p>Description: {{ task[2] }}</p> <!-- Task Description -->
+                    <form action="" method="post">
+                        <button type="submit" class="lesson-button">Do task<!-- where to put variable so that it shows a completed / uncompleted lesson --></button>
+                    </form>
                     {% if isAuthor %}
                     <form action="{{ url_for('remove_task', cid=cid, tid=task[0]) }}" method="post">
                         <input type="hidden" name="tid" value="{{ task[0] }}">

@@ -29,24 +29,26 @@
         </nav>
     </header>
     <div class="container-d">
-        <div class="background-column">
+       <!---- <div class="background-column">
             <img src="{{ url_for('static', filename='images/login.jpg') }}?v=2" alt="Login Background">
-        </div>
+        </div> -->
         <div class="login-column">
-            <h2 style="text-align: center;">Account Login</h2>
+            <h2 style="text-align: center; color: white;">Account Login</h2>
             <form class="Login-content" method="POST" action="{{ url_for('login') }}">
                 <p id="login-error-msg"></p>
-                <label for="email">Email</label>
-                <input style="width: 350px;" type="email" id="email" name="email" required> <br>
-                <label for="password">Password</label>
-                <input style="width: 350px;" type="password" id="password" name="password" required>
+                <label for="email" class="email-label">Email</label>
+                <input style="width: 350px; box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);" type="email" id="email" name="email" required> <br>
+                <label for="password" class="password-label">Password</label>
+                <input style="width: 350px; box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);" type="password" id="password" name="password" required>
                 <button id="login-btn" type="submit" value="login">Login</button>
             </form>
+            <p id="switch-register-login">Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.</p>
             {% if message %}
                 <p style="color: red;">{{ message }}</p>
             {% endif %}
         </div>
     </div>
     <script src="{{ url_for('static', filename='js/login-button.js') }}"></script>
+    
 </body>
 </html>

@@ -1,16 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Admin Dashboard</title>
+    <title>Manage Users</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <style>
-        /* Basic Styling (Customize as needed) */
-        body { font-family: sans-serif; }
-        .container { width: 80%; margin: 20px auto; }
-        h1 { text-align: center; }
-        .info-box { border: 1px solid #ccc; padding: 15px; margin-bottom: 10px; }
-        .button { display: inline-block; padding: 10px 15px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
     <header>
@@ -27,33 +20,36 @@
             {% if name %}
                 <a class="nav-item" href="{{ url_for('profile') }}">Account</a>
             {% else %}
-                <a class="nav-item" href="{{ 'login' }}">Login</a>
+                <a class="nav-item" href="{{ url_for('login') }}">Login</a>
             {% endif %}
 
         </nav>
     </header>
-    <div class="container">
+    <div class="bg-gray-100 text-gray-800 min-h-screen p-8">
+        <div class="max-w-3xl mx-auto">
+            <h1 class="text-3xl font-bold mb-4 text-blue-500">Welcome, {{ name }}</h1>
+            <h2 class="text-2xl font-semibold mb-4">User List</h2>
 
-        <div class="info-box">
-            <h2>Your Information:</h2>
-            {% if session.get('name') %}
-                <p><strong>Name:</strong> {{ session.get('name') }}</p>
-            {% endif %}
+            {% for user in users %} 
+            <div class="bg-white p-4 rounded-lg shadow-md mb-4 flex items-center">
+                <div class="flex-grow mr-4">
+                    <p class="text-lg font-semibold">{{ user[1] }} ( <span class="{% if user[4] == 'Admin' %}
+                        role-admin
+                    {% elif user[4] == 'User' %}
+                        role-user
+                    {% elif user[4] == 'Author' %}
+                        role-author
+                    {% endif %} font-bold">{{ role_map.get(user[4], 'Unknown') }}</span> )</p>
+                    <p class="text-sm text-gray-500">{{ user[2] }}</p>
+                    <p class="text-sm text--400 font-extrabold">{{ user[0] }}</p>
+                </div>
+                <div>
+                    <a href="{{ url_for('change_role', uid=user[0]) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</a>
+                    <a href="{{ url_for('delete_user', uid=user[0]) }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2">Delete</a>
+                </div>
+            </div>
+            {% endfor %}
 
-            {% if session.get('email') %}
-                <p><strong>Email:</strong> {{ session.get('email') }}</p>
-            {% endif %}
-
-            {% if session.get('user_id') %}
-                <p><strong>User ID:</strong> {{ session.get('user_id') }}</p>
-            {% endif %}
-        </div>
-
-        <div class="info-box">
-            <h2>Admin Actions:</h2>
-            <a href="{{ url_for('create_course') }}" class="button">Create New Course</a>
-            <a href="{{url_for('manage_users')}}" class="button">Manage Users</a>
-            <a href="" class="button">View Reports</a>
         </div>
     </div>
 </body>

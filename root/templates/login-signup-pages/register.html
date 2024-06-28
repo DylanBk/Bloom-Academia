@@ -28,20 +28,20 @@
         </nav>
     </header>
 
-    <h2 style="text-align: center;">Register</h2>
-
+    <div class="container-d">
     <form class="Register-content" id="signup-form" action="{{ url_for('register') }}" method="post" onsubmit="return validateForm()">
         <p id="create-user-error-msg"></p>
-        <label for="email">Email:</label>
-        <input style="width: 350px;" id="email" name="email" required>
+        <h2 style="text-align: center; color: white;">Register</h2>
+        <label for="email" class="email-label">Email</label>
+        <input style="width: 350px; box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);" id="email" name="email" required>
 
-        <label for="password">Password:</label>
-        <input style="width: 350px;" type="password" id="password" name="password" required>
+        <label for="password" class="password-label">Password</label>
+        <input style="width: 350px; box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);" type="password" id="password" name="password" required>
         
-        <label for="name">Name:</label>
-        <input style="width: 350px;" type="text" id="name" name="name" required>
+        <label for="name" class="password-label">Name</label>
+        <input style="width: 350px; box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);" type="text" id="name" name="name" required>
         <button class="home-options-btn" style="color: white;" type="submit">Register</button>
     </form>
-
+</div>
 </body>
 </html>

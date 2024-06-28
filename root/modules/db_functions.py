@@ -44,7 +44,7 @@ def get_user_profile(conn, user_id):
 def get_user_courses(conn, user_id):
     c = conn.cursor()
     c.execute("""
-        SELECT courses.cname, courses.description
+        SELECT courses.cname, courses.description, courses.course_image, courses.cid
         FROM courses
         JOIN course_users ON courses.cid = course_users.cid
         WHERE course_users.uid = ?
@@ -141,13 +141,6 @@ def change_role(conn, uid, new_role):
     c.execute("UPDATE users SET role = ? WHERE uid = ?", (new_role, uid))
     return c.rowcount
 
-def check_admin(conn, user_id):
-    c = conn.cursor()
-    c.execute("SELECT role FROM users WHERE uid = ?", (user_id,))
-    if c.fetchone()[0] == 3:
-        return True
-    else:
-        return False
 
 # --- DATABASE CREATION FUNCTION ---
 def create():
@@ -164,7 +157,7 @@ def create():
         connection.execute("PRAGMA foreign_keys = ON;") 
 
         # -- USERS -- (CREATE USERS TABLE)
-        create_table(connection, "users", ["uid INTEGER PRIMARY KEY AUTOINCREMENT", "name TEXT NOT NULL", "email TEXT UNIQUE", "password TEXT NOT NULL", "role INTEGER"])
+        create_table(connection, "users", ["uid INTEGER PRIMARY KEY AUTOINCREMENT", "name TEXT NOT NULL", "email TEXT UNIQUE", "password TEXT NOT NULL", "role TEXT DEFAULT 'User'"])
         # -- COURSES -- (CREATE COURSES & COURSE_USERS TABLES)
         create_table(connection, "courses", ["cid INTEGER PRIMARY KEY AUTOINCREMENT", "cname TEXT", "description TEXT", "course_image BLOB", "uid INTEGER REFERENCES users(uid)"])
         create_table(connection, "course_users", ["cid INTEGER REFERENCES courses(cid)", "uid INTEGER REFERENCES users(uid)", "CUID INTEGER PRIMARY KEY AUTOINCREMENT"])
