@@ -609,6 +609,25 @@ ul {
     animation: fadeIn 1.5s ease-out forwards;
 }
 
+.about-site-container {
+    display: flex;
+    flex-direction: column;
+    margin: 2rem;
+    background: #efeff3;
+}
+.about-site-head {
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+    background: var(--secondary);
+    color: white;
+}
+
+.about-site-body {
+    display: flex;
+    padding: 0.5rem;
+}
+
 footer {
     display: flex;
     align-items: center;

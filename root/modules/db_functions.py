@@ -136,6 +136,11 @@ def find_course(conn, cname):
     c.execute("SELECT cname, description, course_image, cid FROM courses WHERE cname = ?", (cname,))
     return c.fetchall()
 
+def request_author(conn, uid, email, reason, area):
+    c = conn.cursor()
+    c.execute("INSERT INTO author_requests (uid, email, reason, area) VALUES (?, ?, ?, ?)", (uid, email, reason, area))
+    return c.fetchall()
+
 def change_role(conn, uid, new_role):
     c = conn.cursor()
     c.execute("UPDATE users SET role = ? WHERE uid = ?", (new_role, uid))
@@ -144,12 +149,13 @@ def change_role(conn, uid, new_role):
 def default_admin(conn):
     c = conn.cursor()
     c.execute("UPDATE users SET role = 'Admin' WHERE email = 'atanas.kyurkchiev.004@accesscreative.ac.uk'")
+    c.execute("UPDATE users SET role = 'Admin' WHERE email = 'test@domain.com'")
     return c.rowcount
 
 
 # --- DATABASE CREATION FUNCTION ---
 def create():
-    db_path = "./root/instance/users.db"
+    db_path = "././instance/users.db"
     db = db_exists(db_path)
     if db:
         print("Database already exists.")

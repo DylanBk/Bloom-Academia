@@ -1,11 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/style.css') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bloom Academia | About Us</title>
 </head>
 <body>
-    go away
+    <header>
+        <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
+        <nav>
+            <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}">
+                <input id="search-bar-input" type="text" name="search-bar-input" placeholder="Search for a course...">
+                <button id="search-bar-btn" type="submit" name="search-bar-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32">
+                        <desc>Search Streamline Icon: https://streamlinehq.com</desc>
+                        <path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path>
+                        <path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path>
+                    </svg>
+                </button>
+            </form>
+            <a class="nav-item" href="{{ url_for('profile') }}">In Progress</a>
+            <a class="nav-item" href="{{ url_for('list_courses') }}">Courses</a>
+            {% if name %}
+                <a class="nav-item" href="{{ url_for('profile') }}">Account</a>
+            {% else %}
+                <a class="nav-item" href="{{ 'login' }}">Login</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <div id="main-wrapper">
+        <div class="about-site-container">
+            <div class="about-site-head"><h2>What is Bloom Academia?</h2></div>
+            <div class="about-site-body"><p>We believe that knowledge should be accessible to everyone, regardless of their background or financial situation. This belief inspired us to create Bloom Academia, a platform dedicated to the free exchange of knowledge. At Bloom Academia, we aim to build a community where people from all walks of life can come together to learn, share, and grow intellectually.
+                <br><br>As students ourselves, we know of the challenges that come with finding reliable and affordable resources for studying and revision. The struggle to access quality educational materials can be a significant barrier to success, and we wanted to address this issue head-on. That's why we developed Bloom Academia—to serve as a central hub where learners can find a wealth of information and resources at their fingertips. Our platform is designed to support a collaborative learning environment. Users can contribute their knowledge, share study materials, participate in discussions, and help each other understand complex subjects. We believe that by fostering a sense of community and cooperation, we can make learning more effective and enjoyable for everyone.
+                <br><br>At Bloom Academia, we are committed to ensuring that educational opportunities are available to all. We provide a wide range of resources, from study guides and tutorials to forums and interactive learning tools. Our goal is to empower students to achieve their academic potential and to cultivate a lifelong love of learning. In addition to providing access to educational content, Bloom Academia also emphasizes the importance of peer support and mentorship. We encourage experienced learners to mentor those who are just beginning their academic journeys, creating a supportive network that benefits everyone involved.
+                <br><br>Ultimately, Bloom Academia is more than just a website; it's a movement toward a more equitable and inclusive education system. We invite you to join us in our mission to democratize knowledge and make learning accessible to all. Together, we can build a brighter future where everyone has the opportunity to learn, grow, and succeed.</p></div>
+        </div>
+
+        <div class="about-site-container">
+            <div class="about-site-head"><h2>Want to create courses for other uses?</h2></div>
+            <div class="about-site-body"><p>If you're interested in designing and uploading courses for other users, all you need to do is complete the form linked below and we will send you an email stating whether we think you're suitable or not. After you have uploaded a course, you may have to wait a while for it to be available on the site since we have to moderate the content.
+                <a href="{{ url_for('apply_author') }}"></a>
+            </p></div>
+        </div>
+    </div>
+
+
 </body>
 </html>
