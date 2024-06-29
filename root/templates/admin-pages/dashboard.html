@@ -25,30 +25,53 @@
 
         </nav>
     </header>
-    <div class="bg-gray-100 text-gray-800 min-h-screen p-8">
-        <div class="max-w-3xl mx-auto">
-            <h1 class="text-3xl font-bold mb-4 text-blue-500">Welcome, {{ name }}</h1>
-            <h2 class="text-2xl font-semibold mb-4">User List</h2>
+    <div class="flex-col items-center text-gray-800 min-h-screen p-8">
+        <h1 class="text-3xl font-bold mb-4 text-blue-500">Welcome, {{ name }}</h1>
+        <div class="max-w-full">
 
-            {% for user in users %} 
-            <div class="bg-white p-4 rounded-lg shadow-md mb-4 flex items-center">
-                <div class="flex-grow mr-4">
-                    <p class="text-lg font-semibold">{{ user[1] }} ( <span class="{% if user[4] == 'Admin' %}
-                        role-admin
-                    {% elif user[4] == 'User' %}
-                        role-user
-                    {% elif user[4] == 'Author' %}
-                        role-author
-                    {% endif %} font-bold">{{ user[4] }}</span> )</p>
-                    <p class="text-sm text-gray-500">{{ user[2] }}</p>
-                    <p class="text-sm text--400 font-extrabold">{{ user[0] }}</p>
+            <div id="manage-users-container" class="flex direction-row items-start justify-evenly">
+                <div id="manage-users-col">
+                    <h2 class="text-2xl text-center font-semibold mb-4">User List</h2>
+                    {% for user in users %} 
+                    <div class="w-96 bg-white p-4 rounded-lg shadow-md mb-4 flex items-center">
+                        <div class="flex-grow mr-4">
+                            <p class="text-lg font-semibold">{{ user[1] }} ( <span class="{% if user[4] == 'Admin' %}
+                                role-admin
+                            {% elif user[4] == 'User' %}
+                                role-user
+                            {% elif user[4] == 'Author' %}
+                                role-author
+                            {% endif %} font-bold">{{ user[4] }}</span> )</p>
+                            <p class="text-sm text-gray-500">{{ user[2] }}</p>
+                            <p class="text-sm text--400 font-extrabold">{{ user[0] }}</p>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('change_role', uid=user[0]) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</a>
+                            <a href="{{ url_for('delete_user', uid=user[0]) }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2">Delete</a>
+                        </div>
+                    </div>
+                    {% endfor %}
                 </div>
-                <div>
-                    <a href="{{ url_for('change_role', uid=user[0]) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</a>
-                    <a href="{{ url_for('delete_user', uid=user[0]) }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2">Delete</a>
+
+                <div id="manage-author-requests-col">
+                    <h2 class="text-2xl text-center font-semibold mb-4">Author Requests</h2>
+                    {% for request in author_requests %}
+                    <div class="bg-white p-4 rounded-lg shadow-md mb-4 flex items-center">
+                        <div class="flex-grow mr-4">
+                            <p class="text-lg font-semibold">{{ request[1] }}</p>
+                            <p>Specialty: <span class="text-m text-gray-500">{{ request[3] }}</span></p>
+                            <p class="text-m text-grey-500">Reason: {{ request[2] }}</p>
+                        </div>
+
+                        <form id="clear-author-request-form" action="{{ url_for('clear_author_request', uid=request[0]) }}" method="post">
+                            <p>{{ request[0] }}</p>
+                            <input type="hidden" name="uid" value="{{ request[0] }}">
+                            <button id="accept-author-request" name="accept-author-request" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2" type="submit">Accept</button>
+                            <button id="decline-author-request" name="decline-author-request" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2" type="submit">Decline</button>
+                        </form>
+                    {% endfor %}
                 </div>
-            </div>
-            {% endfor %}
+            </div> <!-- end of #manage-users-container -->
 
         </div>
     </div>

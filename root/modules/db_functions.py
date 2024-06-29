@@ -146,10 +146,16 @@ def change_role(conn, uid, new_role):
     c.execute("UPDATE users SET role = ? WHERE uid = ?", (new_role, uid))
     return c.rowcount
 
+# --- DEFAULT ACCOUNTS ---
+
 def default_admin(conn):
     c = conn.cursor()
-    c.execute("UPDATE users SET role = 'Admin' WHERE email = 'atanas.kyurkchiev.004@accesscreative.ac.uk'")
-    c.execute("UPDATE users SET role = 'Admin' WHERE email = 'test@domain.com'")
+    c.execute("UPDATE users SET role = 'Admin' WHERE email = 'admin@domain.com'")
+    return c.rowcount
+
+def default_author(conn):
+    c = conn.cursor()
+    c.execute("UPDATE users SET role = 'Author' WHERE email = 'author@domain.com'")
     return c.rowcount
 
 
@@ -174,7 +180,7 @@ def create():
         create_table(connection, "course_users", ["cid INTEGER REFERENCES courses(cid)", "uid INTEGER REFERENCES users(uid)", "CUID INTEGER PRIMARY KEY AUTOINCREMENT"])
         create_table(connection, "course_tasks", ["tid INTEGER PRIMARY KEY AUTOINCREMENT", "cid INTEGER REFERENCES courses(cid)", "task_title TEXT", "task_description TEXT", "completed INTEGER"])
         create_table(connection, "users_tasks", ["tid INTEGER REFERENCES course_tasks(tid)", "uid INTEGER REFERENCES users(uid)", "TUID INTEGER PRIMARY KEY AUTOINCREMENT"])
-        
+        create_table(connection, "author_requests", ["uid INTEGER REFERENCES users(uid), email TEXT REFERENCES users(email), reason TEXT, area TEXT"])
         # -- FINISH --
         print("Database + tables created successfully.")
         connection.close()

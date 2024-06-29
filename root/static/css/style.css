@@ -3,20 +3,23 @@
     --primary: #25487D;
     --secondary: #006F9B;
     --accent: #00B64C;
+    --text: #000000;
 
     @media (prefers-contrast) and (not (forced-colors)) { /* colour scheme for people with contrast mode on & forced colours off */
         --bg: #FFFFFF;
         --primary: #25487D;
         --secondary: #0836A2; 
         --accent: #03d85c;
+        --text: #000000;
     }
 
-    @media (prefers-color-scheme: dark) {
+    /* @media (prefers-color-scheme: dark) { !!! MORE SPECIFC TEXT COLOURS NEED TO BE CHANGED !!!
         --bg: #141414;
         --primary: #25487D;
         --secondary: #0087BD;
         --accent: #00B64C;
-    }
+        --text: #FFFFFF;
+    } */
 }
 
 @keyframes fadeInFromTop {
@@ -64,7 +67,8 @@ body {
 
 
 body {
-  background-color: #ffffff;
+  background-color: var(--bg);
+  color: var(--text);
   background-image: url("root/static/images/wave-haikei.png");
   color: #020113;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -264,8 +268,7 @@ h1 {
     padding: 150px;          /* Adjust padding as needed */
   }
   
-.login-column {
-    background-color: #006F9B;
+.form-column {
     height: 30rem;
     width: 25rem;
     display: flex;
@@ -273,12 +276,14 @@ h1 {
     align-items: center;
     justify-content: center;
     border-radius: 5px;
+    background-color: var(--secondary);
+    color: white;
     box-shadow: 0 0 14px black;
 }
-.login-column #switch-register-login {
+.form-column #switch-register-login {
     color: white;
 }
-.login-column #switch-register-login a {
+.form-column #switch-register-login a {
     color: white;
     font-weight: 500;
 }
@@ -298,12 +303,12 @@ h1 {
   }
   
   /* Optional: if you want the columns to have their own padding too */
-  .background-column, .login-column {
+  .background-column, .form-column {
     padding: 20px; 
   }
   
   /* Optional styling for better visual separation */
-  .background-column, .login-column {
+  .background-column, .form-column {
     padding: 20px; /* Add some padding */
   }
 
@@ -383,6 +388,32 @@ h1 {
     gap: 1.5rem;
     margin: 3rem 2rem;
 }
+
+#apply-for-author-form label {
+    margin: 1rem 0.5rem 0.5rem;
+}
+
+#apply-for-author-form button {
+    padding: 1rem;
+    border: none;
+    border-radius: 5px;
+    margin: 1.5rem 0;
+    background: var(--primary);
+    color: white;
+    font-size: 110%;
+    cursor: pointer;
+}
+#apply-for-author-form button:hover {
+    background: #307EF2;
+}
+
+#author-form-h2 {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+
+
 .role-admin {
     color: crimson;
     font-weight: bold;
@@ -625,7 +656,23 @@ ul {
 
 .about-site-body {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     padding: 0.5rem;
+}
+
+.about-site-body a {
+    width: fit-content;
+    padding: 0.5rem;
+    border-radius: 5px;
+    margin-top: 0.75rem;
+    background: var(--primary);
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.about-site-body a:hover {
+    background: var(--secondary);
 }
 
 footer {

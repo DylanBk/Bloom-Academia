@@ -31,13 +31,13 @@
     </header>
 
     <div id="main-wrapper">
-        <div id="author-form-container">
-            <h2>Fill in the form and then press submit, it may be a few days until you get a response.</h2>
-            <form id="apply-for-author-form" action="#">
+        <h2 id="author-form-h2">Fill in the form and then press submit, it may be a few days until you get a response.</h2>
+        <div id="author-form-container" class="container-d">
+            <form id="apply-for-author-form" class="form-column" action="{{ url_for('apply_author') }}" method="POST">
                 <p id="author-form-error-p"></p>
-                <label for="user-email">Email</label><input id="user-email" type="email">
-                <label for="user-reason">Why do you want to become a course author?</label><input id="user-reason" type="text">
-                <label for="user-specialty">What area is your specialty?</label><input id="user-specialty" type="text">
+                <label for="user-email">Email</label><input id="user-email" name="user-email" type="email" maxlength="320" required>
+                <label for="user-reason">Why do you want to become a course author?</label><input id="user-reason" name="user-reason" type="text" maxlength="100" required>
+                <label for="user-specialty">What area is your specialty?</label><input id="user-specialty" name="user-specialty" type="text" maxlength="20" required>
                 <button type="submit">Submit</button>
             </form>
         </div>

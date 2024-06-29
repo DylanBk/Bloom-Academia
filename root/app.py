@@ -202,23 +202,29 @@ def change_role(uid):
 def apply_author():
     if not session:
         return redirect(url_for('login'))
+
     if session.get('role') != 'User':
-        return render_template('error.html', error_type="Bad Request", error_title="You cannot apply for a role you already have.", error_subtitle="It looks like you already have the author role, if you think this is a mistake please contact us.")
+        return render_template('error.html', error_type="Bad Request", error_title="You cannot apply for a role you already have.", error_subtitle="It looks like you already have the author role, if you think this is a mistake please contact us.", name=session.get('name'))
 
     if request.method == 'POST':
+        print("data retrieved")
         user_id = session['user_id']
+        print(user_id)
         email = request.form['user-email']
+        print(email)
         reason = request.form['user-reason']
+        print(reason)
         area = request.form['user-specialty']
+        print(user_id, email, reason, area)
 
         with db.connect("././instance/users.db") as conn:
+            print("connected to db")
             db.request_author(conn, user_id, email, reason, area)
+            print("passed into db func")
 
         return redirect(url_for('success', message="Your request has been submitted successfully", name=session.get('name')))
-    return render_template('applyforauthor.html')
-
-
-    return render_template('applyforauthor.html')
+    print("GET request")
+    return render_template('applyforauthor.html', name=session.get('name'))
 
 @app.route('/join_course/<int:cid>', methods=['POST'])
 def join_course(cid):
@@ -235,9 +241,9 @@ def join_course(cid):
         if not existing_join:
             cursor.execute("INSERT INTO course_users (cid, uid) VALUES (?, ?)", (cid, user_id))
             conn.commit()
-            return redirect(url_for('list_courses', message='Successfully joined the course!'))
+            return redirect(url_for('list_courses', message='Successfully joined the course!', name=session.get('name')))
         else:
-            return redirect(url_for('list_courses', message='Already enrolled in the course!'))
+            return redirect(url_for('list_courses', message='Already enrolled in the course!', name=session.get('name')))
 
 @app.route('/leave_course/<int:cid>', methods=['POST'])
 def leave_course(cid):
@@ -249,7 +255,7 @@ def leave_course(cid):
         cursor = conn.cursor()
         cursor.execute("DELETE FROM course_users WHERE cid = ? AND uid = ?", (cid, user_id))
         conn.commit()
-        return redirect(url_for('list_courses', message='Successfully left the course!'))
+        return redirect(url_for('list_courses', message='Successfully left the course!', name=session.get('name')))
         
 @app.route('/deletecourse/<int:cid>', methods=['GET', 'POST'])
 def delete_course(cid):
@@ -258,8 +264,8 @@ def delete_course(cid):
     if request.method == 'POST':
         with db.connect("././instance/users.db") as conn:
             db.delete_course(conn, cid)
-        return redirect(url_for('success', message="Course deleted successfully!"))
-    return render_template('/course-pages/deletecourse.html')
+        return redirect(url_for('success', message="Course deleted successfully!", name=session.get('name')))
+    return render_template('/course-pages/deletecourse.html', name=session.get('name'))
 
 
 # --- USER ROUTES ---
@@ -323,9 +329,9 @@ def search_user():
             user = db.find_user(conn, email)
 
         if user:
-            return render_template('user_results.html', user=user)
-        return render_template('user_results.html', message="User not found")
-    return render_template('searchuser.html')
+            return render_template('user_results.html', user=user, name=session.get('name'))
+        return render_template('user_results.html', message="User not found", name=session.get('name'))
+    return render_template('searchuser.html', name=session.get('name'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -368,8 +374,62 @@ def admin():
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users ORDER BY uid DESC")
         users = cursor.fetchall()
+        cursor.execute("SELECT * FROM author_requests ORDER BY uid DESC")
+        author_requests = cursor.fetchall()
 
-    return render_template('admin-pages/dashboard.html', users=users, name=session.get('name'))
+    return render_template('admin-pages/dashboard.html', users=users, author_requests=author_requests, name=session.get('name'))
+
+@app.route('/admin/giveauthor/<int:uid>', methods=['GET', 'POST'])
+def clear_author_request(uid):
+    if not session:
+        print("no session")
+        return redirect(url_for('login'))
+
+    if session.get('role') != 'Admin':
+        print("no admin")
+        return render_template('error.html', error_type="Unauthorised Access", error_title="You do not have authorisation to view this content.", error_subtitle="If you think this is a mistake, please contact us.")
+
+    with db.connect("././instance/users.db") as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM users ORDER BY uid DESC")
+        users = cursor.fetchall()
+        cursor.execute("SELECT * FROM author_requests ORDER BY uid DESC")
+        author_requests = cursor.fetchall()
+
+    if request.method == 'POST':
+        print("POST request")
+        accept_btn = request.form.get('accept-author-request')
+        decline_btn = request.form.get('decline-author-request')
+
+        if 'accept-author-request' in request.form:
+            db.change_role(conn, uid, 'Author')
+            conn.commit()
+            print(f"Accepted author request for UID: {uid}")
+        elif 'decline-author-request' in request.form:
+            print(f"Declined author request for UID: {uid}")
+        else:
+            print("No valid action specified")
+
+        with db.connect('././instance/users.db') as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM author_requests WHERE uid = ?", (uid,))
+            conn.commit()
+            print("authorised")
+
+        return redirect(url_for('admin'))
+
+        # with db.connect("././instance/users.db") as conn:
+        #     cursor = conn.cursor()
+        #     cursor.execute("SELECT * FROM users ORDER BY uid DESC")
+        #     users = cursor.fetchall()
+        #     cursor.execute("SELECT * FROM author_requests ORDER BY uid DESC")
+        #     author_requests = cursor.fetchall()
+
+        # return render_template('/admin-pages/dashboard.html', users=users, author_requests=author_requests, name=session.get('name'))
+
+    print("GET request")
+    return redirect(url_for('admin'))
+    # return render_template('/admin-pages/dashboard.html', users=users, author_requests=author_requests, name=session.get('name'))
 
 @app.route('/admin/delete_user/<int:uid>', methods=['GET', 'POST'])
 def delete_user(uid):
@@ -385,6 +445,7 @@ def delete_user(uid):
 db.create()
 with db.connect("././instance/users.db") as conn:
     db.default_admin(conn)
+    db.default_author(conn)
 
 if __name__ == "__main__":
     app.run()
