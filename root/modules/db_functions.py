@@ -161,7 +161,7 @@ def default_author(conn):
 
 # --- DATABASE CREATION FUNCTION ---
 def create():
-    db_path = "././instance/users.db"
+    db_path = "root/instance/users.db"
     db = db_exists(db_path)
     if db:
         print("Database already exists.")

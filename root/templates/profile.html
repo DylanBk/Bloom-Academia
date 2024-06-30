@@ -52,6 +52,9 @@
   {% elif role == 'Author' %}
       role-author
   {% endif %}">Role: {{ role }}</p>
+  {% if role == 'Admin' %}
+  <button class="bg-red-600 text-neutral-500 px-4 py-2 rounded-lg hover:bg-red-700 brightness-50"><a href="{{ url_for('admin') }}">Super Secret Area</a></button>
+  {% endif %}
     </div>
     <button class="bg-red-600 text-red-100 px-4 py-2 rounded-lg hover:bg-red-700"><a href="{{ url_for('logout') }}">Logout</a></button>
   </div>

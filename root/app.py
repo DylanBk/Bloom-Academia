@@ -5,6 +5,8 @@ app = Flask(__name__)
 # Secret key for session management.
 app.secret_key = 'supersecretkey' 
 
+db_path = "root/instance/users.db"
+
 # Allowed extensions for file uploads
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'jfif'}
 
@@ -69,7 +71,7 @@ def create_course():
                 description = request.form['course-description']
                 authorID = session['user_id']
 
-                with db.connect("././instance/users.db") as conn:
+                with db.connect(db_path) as conn:
                     cursor = conn.cursor()
                     db.upload_course(conn, title, description, img_data, authorID)
                     conn.commit()
@@ -86,7 +88,7 @@ def create_course():
 @app.route('/courses')
 def list_courses():
     try:
-        with db.connect("././instance/users.db") as conn:
+        with db.connect(db_path) as conn:
             courses = db.get_courses(conn)
             name = session.get('name')
 
@@ -114,7 +116,7 @@ def view_course(cid):
         return redirect(url_for('login'))
     
     try:
-        with db.connect("././instance/users.db") as conn:
+        with db.connect(db_path) as conn:
             name = session.get('name')
             course = db.get_course(conn, cid)
             tasks = db.get_tasks(conn, cid)
@@ -140,7 +142,7 @@ def add_task(cid):
     task_title = request.form['task_title']
     task_description = request.form['task_description']
 
-    with db.connect("././instance/users.db") as conn:
+    with db.connect(db_path) as conn:
         db.add_task(conn, cid, task_title, task_description)
 
     return redirect(url_for('view_course', cid=cid))
@@ -152,7 +154,7 @@ def remove_task(cid):
 
     tid = request.form.get('tid')  # Get tid from the form
     if tid is not None:  # Check if tid is provided
-        with db.connect("././instance/users.db") as conn:
+        with db.connect(db_path) as conn:
             db.remove_task(conn, cid, tid)
 
     return redirect(url_for('view_course', cid=cid))
@@ -162,7 +164,7 @@ def search_course():
     if request.method == 'POST':
         query = request.form['search-bar-input']
 
-        with db.connect("././instance/users.db") as conn:
+        with db.connect(db_path) as conn:
             courses = db.find_course(conn, query)
             name = session.get('name')
 
@@ -192,7 +194,7 @@ def change_role(uid):
         role = request.form['role']
         uid = request.form['uid']
 
-        with db.connect("././instance/users.db") as conn:
+        with db.connect(db_path) as conn:
             db.change_role(conn, uid, role)
 
         return redirect(url_for('success', message="Role changed successfully!", name=session.get('name')))
@@ -217,7 +219,7 @@ def apply_author():
         area = request.form['user-specialty']
         print(user_id, email, reason, area)
 
-        with db.connect("././instance/users.db") as conn:
+        with db.connect(db_path) as conn:
             print("connected to db")
             db.request_author(conn, user_id, email, reason, area)
             print("passed into db func")
@@ -233,7 +235,7 @@ def join_course(cid):
 
     user_id = session['user_id']
 
-    with db.connect("././instance/users.db") as conn:
+    with db.connect(db_path) as conn:
         cursor = conn.cursor()
         # Check if the user is already joined
         cursor.execute("SELECT * FROM course_users WHERE cid = ? AND uid = ?", (cid, user_id))
@@ -251,7 +253,7 @@ def leave_course(cid):
         return redirect(url_for('login'))
     user_id = session['user_id']
     
-    with db.connect("././instance/users.db") as conn:
+    with db.connect(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("DELETE FROM course_users WHERE cid = ? AND uid = ?", (cid, user_id))
         conn.commit()
@@ -262,7 +264,7 @@ def delete_course(cid):
     if not session or session.get('role') not in ['Author', 'Admin']:  # Authentication & Authorization
         return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to delete courses.", name=session.get('name'))
     if request.method == 'POST':
-        with db.connect("././instance/users.db") as conn:
+        with db.connect(db_path) as conn:
             db.delete_course(conn, cid)
         return redirect(url_for('success', message="Course deleted successfully!", name=session.get('name')))
     return render_template('/course-pages/deletecourse.html', name=session.get('name'))
@@ -288,7 +290,7 @@ def register():
         # check = '' # only create user once verified
         # if check:
 
-        with db.connect("././instance/users.db") as conn:
+        with db.connect(db_path) as conn:
             db.create_user(conn, name, email, password, role="User")
 
         return redirect(url_for('success', message="User created successfully!"))
@@ -301,7 +303,7 @@ def profile():
 
     user_id = session['user_id']
 
-    with db.connect("././instance/users.db") as conn:
+    with db.connect(db_path) as conn:
         user_profile = db.get_user_profile(conn, user_id)
         courses = db.get_user_courses(conn, user_id)
 
@@ -325,7 +327,7 @@ def search_user():
         return redirect(url_for('login'))
     if request.method == 'POST':
         email = request.form['email']
-        with db.connect("././instance/users.db") as conn:
+        with db.connect(db_path) as conn:
             user = db.find_user(conn, email)
 
         if user:
@@ -341,7 +343,7 @@ def login():
         email = request.form['email']
         password = request.form['password']
 
-        with db.connect("././instance/users.db") as conn:
+        with db.connect(db_path) as conn:
             user = db.find_user(conn, email)
 
         if user and bcrypt.checkpw(password.encode('utf-8'), user[3]):  # 'password' is at index 3
@@ -370,7 +372,7 @@ def success():
 def admin():
     if not session or session.get('role') != 'Admin':
         return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to access the admin dashboard.")
-    with db.connect("././instance/users.db") as conn:
+    with db.connect(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users ORDER BY uid DESC")
         users = cursor.fetchall()
@@ -389,7 +391,7 @@ def clear_author_request(uid):
         print("no admin")
         return render_template('error.html', error_type="Unauthorised Access", error_title="You do not have authorisation to view this content.", error_subtitle="If you think this is a mistake, please contact us.")
 
-    with db.connect("././instance/users.db") as conn:
+    with db.connect(db_path) as conn:
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM users ORDER BY uid DESC")
         users = cursor.fetchall()
@@ -410,7 +412,7 @@ def clear_author_request(uid):
         else:
             print("No valid action specified")
 
-        with db.connect('././instance/users.db') as conn:
+        with db.connect('db_path') as conn:
             cursor = conn.cursor()
             cursor.execute("DELETE FROM author_requests WHERE uid = ?", (uid,))
             conn.commit()
@@ -418,7 +420,7 @@ def clear_author_request(uid):
 
         return redirect(url_for('admin'))
 
-        # with db.connect("././instance/users.db") as conn:
+        # with db.connect(db_path) as conn:
         #     cursor = conn.cursor()
         #     cursor.execute("SELECT * FROM users ORDER BY uid DESC")
         #     users = cursor.fetchall()
@@ -435,7 +437,7 @@ def clear_author_request(uid):
 def delete_user(uid):
     if not session or session.get('role') != 'Admin':
         return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to access the admin dashboard.")
-    with db.connect("././instance/users.db") as conn:
+    with db.connect(db_path) as conn:
         db.delete_user(conn, uid)
 
     return redirect(url_for('admin_dashboard'))
@@ -443,7 +445,7 @@ def delete_user(uid):
 # --- MAIN PROGRAM ---
 
 db.create()
-with db.connect("././instance/users.db") as conn:
+with db.connect(db_path) as conn:
     db.default_admin(conn)
     db.default_author(conn)
 
