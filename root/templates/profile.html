@@ -53,7 +53,7 @@
       role-author
   {% endif %}">Role: {{ role }}</p>
   {% if role == 'Admin' %}
-  <button class="bg-red-600 text-neutral-500 px-4 py-2 rounded-lg hover:bg-red-700 brightness-50"><a href="{{ url_for('admin') }}">Super Secret Area</a></button>
+  <button class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"><a href="{{ url_for('admin') }}">Super Secret Area</a></button>
   {% endif %}
     </div>
     <button class="bg-red-600 text-red-100 px-4 py-2 rounded-lg hover:bg-red-700"><a href="{{ url_for('logout') }}">Logout</a></button>
@@ -62,7 +62,7 @@
     <h3 class="text-xl font-semibold mb-2">Courses Joined:</h3>
     <ul class="space-y-4">
         {% for course in courses %}
-        <li class="flex items-start">
+        <li class="flex items-start w-9/12">
           <img src="data:image/jpeg;base64,{{ course[2] }}" alt="{{ course[0] }}" class="h-8 w-8 mr-4 rounded-full object-cover" />
             <div>
                 <h4 class="font-bold">{{ course[0] }}</h4>

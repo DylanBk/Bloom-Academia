@@ -5,7 +5,7 @@ app = Flask(__name__)
 # Secret key for session management.
 app.secret_key = 'supersecretkey' 
 
-db_path = "root/instance/users.db"
+db_path = "././instance/users.db"
 
 # Allowed extensions for file uploads
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'jfif'}
@@ -57,7 +57,7 @@ def about():
 @app.route('/createcourse', methods=['GET', 'POST'])
 def create_course():
     if not session or session.get('role') not in ['Author', 'Admin']: # Authentication & Authorization
-        return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to create courses.", name=session.get('name'))
+        return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to create courses. To get access, please <a href='" + url_for('apply_author') + "'>click here</a>.", name=session.get('name'))
     
     if request.method == 'POST':  # Corrected method check
         if 'course-img' not in request.files:
