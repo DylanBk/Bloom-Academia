@@ -321,6 +321,93 @@ def profile():
 
     return render_template('profile.html', name=name, email=email, role=role, courses=updated_courses)
 
+@app.route('/settings')
+def settings():
+    if not session:
+        return redirect(url_for('login'))
+
+    name = session.get('name')
+    email = session.get('email')
+
+    return render_template('settings.html', name=name, email=email)
+
+@app.route('/settings/changeusername', methods=['GET', 'POST'])
+def change_username():
+    if not session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        user_id = session['user_id']
+        new_username = request.form['new-username']
+
+        with db.connect(db_path) as conn:
+            db.change_username(conn, user_id, new_username)
+
+        return redirect(url_for('success', message="Username changed successfully!", name=session.get('name')))
+    return render_template('settings.html', name=session.get('name'), email=session.get('email'))
+
+@app.route('/settings/changeemail', methods=['GET', 'POST'])
+def change_email():
+    if not session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        user_id = session['user_id']
+        new_email = request.form['new-email']
+
+        with db.connect(db_path) as conn:
+            db.change_email(conn, user_id, new_email)
+
+        return redirect(url_for('success', message="Email changed successfully!", name=session.get('name')))
+    return render_template('settings.html', name=session.get('name'), email=session.get('email'))
+
+@app.route('/settings/changepassword', methods=['GET', 'POST'])
+def change_password():
+    if not session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        user_id = session['user_id']
+        new_password = request.form['new-password']
+
+        with db.connect(db_path) as conn:
+            db.change_password(conn, user_id, new_password)
+
+        return redirect(url_for('success', message="Password changed successfully!", name=session.get('name')))
+    return render_template('settings.html', name=session.get('name'), email=session.get('email'))
+
+@app.route('/settings/deleteaccount', methods=['GET', 'POST'])
+def delete_account():
+    if not session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        user_id = session['user_id']
+        form_email = request.form['delete-account-email']
+        form_password = request.form['delete-account-password']
+        email = session.get('email')
+
+        with db.connect(db_path) as conn:
+            user = db.find_user(conn, email)
+
+        if bcrypt.checkpw(form_password.encode('utf-8'), user[3]):
+            with db.connect(db_path) as conn:
+                db.delete_account(conn, user_id)
+                session.pop('user_id', None)
+                session.pop('role', None)
+                session.pop('name', None)
+                session.pop('email', None)
+            print("account deleted")
+            
+            return redirect(url_for('success', message="Account deleted successfully!"))
+        
+        print(email, form_email, user[3], form_password)
+
+        return render_template('settings.html', name=session.get('name'), email=session.get('email'), delete_account_error="Incorrect email or password")
+
+    return render_template('settings.html', name=session.get('name'), email=session.get('email'))
+        
+
 @app.route('/searchuser', methods=['GET', 'POST'])
 def search_user():
     if not session:

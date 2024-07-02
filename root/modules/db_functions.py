@@ -54,7 +54,8 @@ def get_user_courses(conn, user_id):
 # --- USER FUNCTIONS --
 def create_user(conn, name, email, password, role):
     c = conn.cursor()
-    password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    salt = bcrypt.gensalt()
+    password = bcrypt.hashpw(password.encode('utf-8'), salt)
     c.execute("INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)", (name, email, password, role))
     return c.lastrowid
 
@@ -67,22 +68,6 @@ def find_user(conn, email):
     c = conn.cursor()
     c.execute("SELECT * FROM users WHERE email = ?", (email,))
     return c.fetchone()
-
-def change_password(conn, email, new_password):
-    c = conn.cursor()
-    new_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
-    c.execute("UPDATE users SET password = ? WHERE email = ?", (new_password, email))
-    return c.rowcount
-
-def change_email(conn, email, new_email):
-    c = conn.cursor()
-    c.execute("UPDATE users SET email = ? WHERE email = ?", (new_email, email))
-    return c.rowcount
-
-def change_name(conn, new_name, email):
-    c = conn.cursor()
-    c.execute("UPDATE users SET name = ? WHERE email = ?", (new_name, email))
-    return c.rowcount
 
 def join_course(conn, cid, user_id):
     c = conn.cursor()
@@ -144,6 +129,27 @@ def request_author(conn, uid, email, reason, area):
 def change_role(conn, uid, new_role):
     c = conn.cursor()
     c.execute("UPDATE users SET role = ? WHERE uid = ?", (new_role, uid))
+    return c.rowcount
+
+def change_username(conn, uid, new_username):
+    c = conn.cursor()
+    c.execute("UPDATE users SET name = ? WHERE uid = ?", (new_username, uid))
+    return c.rowcount
+
+def change_email(conn, uid, new_email):
+    c = conn.cursor()
+    c.execute("UPDATE users SET email = ? WHERE uid = ?", (new_email, uid))
+    return c.rowcount
+
+def change_password(conn, uid, new_password):
+    c = conn.cursor()
+    new_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+    c.execute("UPDATE users SET password = ? WHERE uid = ?", (new_password, uid))
+    return c.rowcount
+
+def delete_account(conn, uid):
+    c = conn.cursor()
+    c.execute("DELETE FROM users WHERE uid = ?", (uid,))
     return c.rowcount
 
 # --- DEFAULT ACCOUNTS ---

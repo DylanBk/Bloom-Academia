@@ -112,8 +112,8 @@
         </li>
         <li id="footer-l3" class="footer-item">
             <a href="{{ url_for('profile') }}">Profile</a>
-            <a href="#">My Courses</a>
-            <a href="#">Settings</a>
+            <a href="{{ url_for('profile') }}">My Courses</a>
+            <a href="{{ url_for('settings') }}">Settings</a>
         </li>
         <li id="footer-l4" class="footer-item">
             <button id="tos-btn" onclick="showTOS()">Terms of Service</button>
