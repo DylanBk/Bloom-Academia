@@ -5,7 +5,7 @@ app = Flask(__name__)
 # Secret key for session management.
 app.secret_key = 'supersecretkey' 
 
-db_path = "./root/instance/users.db"
+db_path = "././instance/users.db"
 
 # Allowed extensions for file uploads
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'jfif'}
@@ -296,10 +296,9 @@ def register():
         return redirect(url_for('success', message="User created successfully!"))
     return render_template('/login-signup-pages/register.html')
 
-@app.route('/profile')
-def profile():
+def get_profile_data():
     if not session:
-        return redirect(url_for('login'))
+        return(url_for('login'))
 
     user_id = session['user_id']
 
@@ -319,18 +318,19 @@ def profile():
             img_base64 = None
         updated_courses.append((title, description, img_base64, cid))
 
-    return render_template('profile.html', name=name, email=email, role=role, courses=updated_courses)
+    return name, email, role, updated_courses
 
+@app.route('/profile')
 @app.route('/settings')
-def settings():
+def profile():
     if not session:
         return redirect(url_for('login'))
 
-    name = session.get('name')
-    email = session.get('email')
+    name, email, role, courses = get_profile_data()
 
-    return render_template('settings.html', name=name, email=email)
+    return render_template('profile.html', name=name, email=email, role=role, courses=courses)
 
+@app.route('/profile/changeusername', methods=['GET', 'POST'])
 @app.route('/settings/changeusername', methods=['GET', 'POST'])
 def change_username():
     if not session:
@@ -344,8 +344,12 @@ def change_username():
             db.change_username(conn, user_id, new_username)
 
         return redirect(url_for('success', message="Username changed successfully!", name=session.get('name')))
-    return render_template('settings.html', name=session.get('name'), email=session.get('email'))
 
+    name, email, role, courses = get_profile_data()
+
+    return render_template('profile.html', name=name, email=email, role=role, courses=courses)
+
+@app.route('/profile/changeemail', methods=['GET', 'POST'])
 @app.route('/settings/changeemail', methods=['GET', 'POST'])
 def change_email():
     if not session:
@@ -359,8 +363,12 @@ def change_email():
             db.change_email(conn, user_id, new_email)
 
         return redirect(url_for('success', message="Email changed successfully!", name=session.get('name')))
-    return render_template('settings.html', name=session.get('name'), email=session.get('email'))
 
+    name, email, role, courses = get_profile_data()
+
+    return render_template('settings.html', name=name, email=email, role=role, courses=courses)
+
+@app.route('/profile/changepassword', methods=['GET', 'POST'])
 @app.route('/settings/changepassword', methods=['GET', 'POST'])
 def change_password():
     if not session:
@@ -374,12 +382,18 @@ def change_password():
             db.change_password(conn, user_id, new_password)
 
         return redirect(url_for('success', message="Password changed successfully!", name=session.get('name')))
-    return render_template('settings.html', name=session.get('name'), email=session.get('email'))
 
+    name, email, role, courses = get_profile_data()
+
+    return render_template('profile.html', name=name, email=email, role=role, courses=courses)
+
+@app.route('/profile/deleteacccount', methods=['GET', 'POST'])
 @app.route('/settings/deleteaccount', methods=['GET', 'POST'])
 def delete_account():
     if not session:
         return redirect(url_for('login'))
+
+    name, email, role, courses = get_profile_data()
 
     if request.method == 'POST':
         user_id = session['user_id']
@@ -390,7 +404,7 @@ def delete_account():
         with db.connect(db_path) as conn:
             user = db.find_user(conn, email)
 
-        if bcrypt.checkpw(form_password.encode('utf-8'), user[3]):
+        if form_email == email and bcrypt.checkpw(form_password.encode('utf-8'), user[3]):
             with db.connect(db_path) as conn:
                 db.delete_account(conn, user_id)
                 session.pop('user_id', None)
@@ -400,12 +414,8 @@ def delete_account():
             print("account deleted")
             
             return redirect(url_for('success', message="Account deleted successfully!"))
-        
-        print(email, form_email, user[3], form_password)
-
-        return render_template('settings.html', name=session.get('name'), email=session.get('email'), delete_account_error="Incorrect email or password")
-
-    return render_template('settings.html', name=session.get('name'), email=session.get('email'))
+        return render_template('profile.html', name=name, email=email, role=role, courses=courses, delete_account_error="Incorrect email or password")
+    return render_template('profile.html', name=name, email=email, role=role, courses=courses)
         
 
 @app.route('/searchuser', methods=['GET', 'POST'])
