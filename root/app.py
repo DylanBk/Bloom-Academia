@@ -5,7 +5,7 @@ app = Flask(__name__)
 # Secret key for session management.
 app.secret_key = 'supersecretkey' 
 
-db_path = "././instance/users.db"
+db_path = "./root/instance/users.db"
 
 # Allowed extensions for file uploads
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'jfif'}
