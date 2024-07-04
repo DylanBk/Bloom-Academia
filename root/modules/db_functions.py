@@ -3,7 +3,7 @@ import bcrypt
 import os
 
 
-db_path = "root/instance/users.db"
+db_path = "././instance/users.db"
 
 # --- CONNECTION ---
 
@@ -66,10 +66,16 @@ def delete_user(conn, uid):
     c.execute("DELETE FROM users WHERE uid = ?", (uid,))
     return c.rowcount
 
-def find_user(conn, email):
+def find_user_by_email(conn, email):
     c = conn.cursor()
     c.execute("SELECT * FROM users WHERE email = ?", (email,))
     return c.fetchone()
+
+def find_user_by_name(conn, username):
+    c = conn.cursor()
+    like_username = f"%{username}%"
+    c.execute("SELECT * FROM users WHERE name LIKE ?", (like_username,))
+    return c.fetchall()
 
 def join_course(conn, cid, user_id):
     c = conn.cursor()

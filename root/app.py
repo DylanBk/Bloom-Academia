@@ -5,7 +5,7 @@ app = Flask(__name__)
 # Secret key for session management.
 app.secret_key = 'supersecretkey' 
 
-db_path = "root/instance/users.db"
+db_path = "././instance/users.db"
 
 # Allowed extensions for file uploads
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'jfif'}
@@ -30,11 +30,11 @@ def err403(error):
 
 @app.errorhandler(404) # resource not found
 def err404(error):
-    return render_template('error.html', error_type="Resource Not Found", error_title="Sorry! We could not find that page.", error_subtitle="Check the URL or return to the <a href='" + url_for('home') + "'>home page</a>.")
+    return render_template('error.html', error_type="Resource Not Found", error_title="Sorry! We could not find that page.", error_subtitle="Check the URL or return to the &nbsp;<a href='" + url_for('home') + "'>home page</a>.")
 
 @app.errorhandler(500) # internal server error
-def err500(error):
-    return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong on our end.", error_subtitle="Check back later or report the issue at <a href='" + url_for('home') + "'>email or something</a>.")
+def err500(error): # !!! REPLACE MY EMAIL WITH SITE EMAIL ONCE SET UP !!!
+    return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong on our end.", error_subtitle="Check back later or report the issue &nbsp; <a href='mailto: dylan.bullock.965@accesscreative.ac.uk'>here</a> &nbsp; by email.")
 
 
 # --- ROUTES ---
@@ -428,7 +428,7 @@ def delete_account():
         email = session.get('email')
 
         with db.connect(db_path) as conn:
-            user = db.find_user(conn, email)
+            user = db.find_user_by_email(conn, email)
 
         if form_email == email and bcrypt.checkpw(form_password.encode('utf-8'), user[3]):
             with db.connect(db_path) as conn:
@@ -448,15 +448,17 @@ def delete_account():
 def search_user():
     if not session:
         return redirect(url_for('login'))
-    if request.method == 'POST':
-        email = request.form['email']
-        with db.connect(db_path) as conn:
-            user = db.find_user(conn, email)
 
-        if user:
-            return render_template('user_results.html', user=user, name=session.get('name'))
+    if request.method == 'POST':
+        username = request.form['user-search-input']
+
+        with db.connect(db_path) as conn:
+            users = db.find_user_by_name(conn, username)
+
+        if users:
+            return render_template('user_results.html', users=users, name=session.get('name'))
         return render_template('user_results.html', message="User not found", name=session.get('name'))
-    return render_template('searchuser.html', name=session.get('name'))
+    return redirect(url_for('admin'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -467,7 +469,7 @@ def login():
         password = request.form['password']
 
         with db.connect(db_path) as conn:
-            user = db.find_user(conn, email)
+            user = db.find_user_by_email(conn, email)
 
         if user and bcrypt.checkpw(password.encode('utf-8'), user[3]):  # 'password' is at index 3
             session['user_id'] = user[0]  # 'id' is at index 0 in the tuple
@@ -551,10 +553,11 @@ def clear_author_request(uid):
 def delete_user(uid):
     if not session or session.get('role') != 'Admin':
         return render_template('error.html', error_type="No Access", error_title="Unauthorized", error_subtitle="You do not have permission to access the admin dashboard.")
+
     with db.connect(db_path) as conn:
         db.delete_user(conn, uid)
 
-    return redirect(url_for('admin_dashboard'))
+    return redirect(url_for('admin'))
 
 @app.route('/courses/<int:cid>/tasks/<int:tid>', methods=['GET', 'POST'])
 def view_task(cid, tid):
