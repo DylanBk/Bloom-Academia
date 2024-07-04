@@ -1,18 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="{{ url_for('static', filename='/css/style.css') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bloom Academia | Author Application Form</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Author Application - Bloom Academia</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#25487D',
+                        'primary-dark': '#1C3A6F',
+                        'secondary': '#006f9b',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
+<body class="bg-white min-h-screen flex flex-col">
     <header>
         <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
         <nav>
             <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}">
-                <input id="search-bar-input" type="text" name="search-bar-input" placeholder="Search for a course...">
+                <input id="search-bar-input" class="text-black" type="text" name="search-bar-input" placeholder="Search for a course...">
                 <button id="search-bar-btn" type="submit" name="search-bar-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32">
                         <desc>Search Streamline Icon: https://streamlinehq.com</desc>
@@ -31,18 +44,56 @@
         </nav>
     </header>
 
-    <div id="main-wrapper">
-        <h2 id="author-form-h2">Fill in the form and then press submit, it may be a few days until you get a response.</h2>
-        <div id="author-form-container" class="container-d">
-            <form id="apply-for-author-form" class="form-column" action="{{ url_for('apply_author') }}" method="POST">
-                <p id="author-form-error-p"></p>
-                <label for="user-email">Email</label><input id="user-email" name="user-email" type="email" maxlength="320" required>
-                <label for="user-reason">Why do you want to become a course author?</label><input id="user-reason" name="user-reason" type="text" maxlength="100" required>
-                <label for="user-specialty">What area is your specialty?</label><input id="user-specialty" name="user-specialty" type="text" maxlength="20" required>
-                <button type="submit">Submit</button>
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="max-w-md w-full space-y-8 bg-secondary p-10 rounded-xl shadow-2xl">
+            <div>
+                <h2 class="text-3xl font-bold text-center text-white mb-2">Author Application</h2>
+                <p class="text-center text-sm text-neutral-200">Fill in the form and then press submit, it may be a few days until you get a response.</p>
+            </div>
+            <form class="mt-8 space-y-6" id="apply-for-author-form" action="{{ url_for('apply_author') }}" method="POST">
+                <div class="rounded-md shadow-sm -space-y-px">
+                    <div>
+                        <label for="user-email" class="sr-only">Email</label>
+                        <input id="user-email" name="user-email" type="email" maxlength="320" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm" placeholder="Email address">
+                    </div>
+                    <div>
+                        <label for="user-reason" class="sr-only">Why do you want to become a course author?</label>
+                        <input id="user-reason" name="user-reason" type="text" maxlength="100" required class="appearance-none rounded-none relative block h-12 w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm" placeholder="Why do you want to become a course author?">
+                    </div>
+                    <div>
+                        <label for="user-specialty" class="sr-only">What area is your specialty?</label>
+                        <input id="user-specialty" name="user-specialty" type="text" maxlength="20" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm" placeholder="What area is your specialty?">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-300">
+                        Submit Application
+                    </button>
+                </div>
             </form>
+            {% if message %}
+                <p class="mt-2 text-center text-sm text-red-600">{{ message }}</p>
+            {% endif %}
         </div>
-    </div>
-    
+    </main>
+
+    <footer>
+        <li id="footer-l1" class="footer-item">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('about') }}">About Us</a>
+            <a href="{{ url_for('register') }}">Sign Up</a>
+            <a href="{{ url_for('login') }}">Login</a>
+        </li>
+        <li id="footer-l2" class="footer-item">
+            <a href="#">View All Courses</a>
+            <a href="{{ url_for('create_course') }}">Create a Course</a>
+            <a href="{{ url_for('profile') }}">Profile</a>
+            <a href="{{ url_for('profile') }}">My Courses</a>
+        </li>
+        <li id="footer-l4" class="footer-item">
+            <button id="tos-btn" onclick="showTOS()">Terms of Service</button>
+        </li>
+    </footer>
 </body>
 </html>

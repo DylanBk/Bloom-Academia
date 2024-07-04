@@ -3,6 +3,8 @@ import bcrypt
 import os
 
 
+db_path = "././instance/users.db"
+
 # --- CONNECTION ---
 
 def connect(db_path):
@@ -118,7 +120,8 @@ def get_tasks(conn, cid):
 
 def find_course(conn, cname):
     c = conn.cursor()
-    c.execute("SELECT cname, description, course_image, cid FROM courses WHERE cname = ?", (cname,))
+    like_pattern = f"%{cname}%"
+    c.execute("SELECT cname, description, course_image, cid FROM courses WHERE cname LIKE ?", (like_pattern,))
     return c.fetchall()
 
 def request_author(conn, uid, email, reason, area):
@@ -152,6 +155,37 @@ def delete_account(conn, uid):
     c.execute("DELETE FROM users WHERE uid = ?", (uid,))
     return c.rowcount
 
+def mark_task_as_complete(conn, user_id, course_id, task_id):
+    c = conn.cursor()
+    c.execute('''
+    INSERT INTO completed_tasks (user_id, course_id, task_id)
+    VALUES (?, ?, ?)
+    ''', (user_id, course_id, task_id))
+    conn.commit()
+
+def get_completed_tasks(conn, user_id, course_id):
+    c = conn.cursor()
+    c.execute('''
+    SELECT task_id FROM completed_tasks
+    WHERE user_id = ? AND course_id = ?
+    ''', (user_id, course_id))
+    return [row[0] for row in c.fetchall()]
+
+def calculate_completion_rate(conn, user_id, course_id):
+    c = conn.cursor()
+    c.execute('SELECT COUNT(*) FROM course_tasks WHERE cid = ?', (course_id,))
+    total_tasks = c.fetchone()[0]
+    
+    c.execute('''
+    SELECT COUNT(*) FROM completed_tasks
+    WHERE user_id = ? AND course_id = ?
+    ''', (user_id, course_id))
+    completed_tasks = c.fetchone()[0]
+    
+    if total_tasks == 0:
+        return 0
+    return (completed_tasks / total_tasks) * 100
+
 # --- DEFAULT ACCOUNTS ---
 
 def default_admin(conn):
@@ -164,10 +198,16 @@ def default_author(conn):
     c.execute("UPDATE users SET role = 'Author' WHERE email = 'author@domain.com'")
     return c.rowcount
 
+def check_admin(conn, uid):
+    c = conn.cursor()
+    c.execute("SELECT Role FROM users WHERE uid = ?", (uid,))
+    if c.fetchone() == 'Admin':
+        return True
+    else:
+        return False
 
 # --- DATABASE CREATION FUNCTION ---
 def create():
-    db_path = "././instance/users.db"
     db = db_exists(db_path)
     if db:
         print("Database already exists.")
@@ -185,8 +225,8 @@ def create():
         create_table(connection, "courses", ["cid INTEGER PRIMARY KEY AUTOINCREMENT", "cname TEXT", "description TEXT", "course_image BLOB", "uid INTEGER REFERENCES users(uid)"])
         create_table(connection, "course_users", ["cid INTEGER REFERENCES courses(cid)", "uid INTEGER REFERENCES users(uid)", "CUID INTEGER PRIMARY KEY AUTOINCREMENT"])
         create_table(connection, "course_tasks", ["tid INTEGER PRIMARY KEY AUTOINCREMENT", "cid INTEGER REFERENCES courses(cid)", "task_title TEXT", "task_description TEXT", "completed INTEGER"])
-        create_table(connection, "users_tasks", ["tid INTEGER REFERENCES course_tasks(tid)", "uid INTEGER REFERENCES users(uid)", "TUID INTEGER PRIMARY KEY AUTOINCREMENT"])
         create_table(connection, "author_requests", ["uid INTEGER REFERENCES users(uid), email TEXT REFERENCES users(email), reason TEXT, area TEXT"])
+        create_table(connection, "completed_tasks", ["id INTEGER PRIMARY KEY AUTOINCREMENT", "user_id INTEGER REFERENCES users(uid)", "course_id INTEGER REFERENCES courses(cid)", "task_id INTEGER REFERENCES course_tasks(tid)", "completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"])
         # -- FINISH --
         print("Database + tables created successfully.")
         connection.close()

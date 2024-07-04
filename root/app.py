@@ -112,27 +112,59 @@ def list_courses():
     
 @app.route('/courses/<int:cid>')
 def view_course(cid):
-    if not session:  # Authentication & Authorization
+    if not session:
         return redirect(url_for('login'))
     
     try:
         with db.connect(db_path) as conn:
+            user_id = session['user_id']
             name = session.get('name')
             course = db.get_course(conn, cid)
             tasks = db.get_tasks(conn, cid)
             title, description, img_data, cid, uid = course
+
             if img_data:
                 img_base64 = base64.b64encode(img_data).decode('utf-8')
             else:
                 img_base64 = None
-            if uid == session['user_id'] or db.check_admin(conn, session['user_id']):
-                return render_template('/course-pages/course.html', title=title, description=description, img_base64=img_data, cid=cid, tasks=tasks, isAuthor=True, name=name)
+
+            if session.get('role') in ["Author", "Admin"]:
+                isAuthor = True
             else:
-                return render_template('/course-pages/course.html', title=title, description=description, img_base64=img_base64, cid=cid, tasks=tasks, isAuthor=False, name=name)
+                isAuthor = False
+
+            completed_tasks = db.get_completed_tasks(conn, user_id, cid)
+            completion_rate = db.calculate_completion_rate(conn, user_id, cid)
+
+            return render_template('/course-pages/course.html',
+                                   title=title,
+                                   description=description,
+                                   img_base64=img_base64, 
+                                   cid=cid, 
+                                   tasks=tasks, 
+                                   isAuthor=isAuthor, 
+                                   name=name,
+                                   completed_tasks=completed_tasks,
+                                   completion_rate=completion_rate)
+                                   
     except db.DatabaseError as db_err:
         return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err), name=name)
     except Exception as e:
         return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong.", error_subtitle=str(e), name=name)
+
+@app.route('/complete_task/<int:cid>/<int:tid>', methods=['POST'])
+def complete_task(cid, tid):
+    if not session:
+        return redirect(url_for('login'))
+    
+    user_id = session['user_id']
+    
+    try:
+        with db.connect(db_path) as conn:
+            db.mark_task_as_complete(conn, user_id, cid, tid)
+        return redirect(url_for('view_course', cid=cid))
+    except Exception as e:
+        return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong.", error_subtitle=str(e), name=session.get('name'))
 
 @app.route('/add_task/<int:cid>', methods=['POST'])
 def add_task(cid):
@@ -509,22 +541,13 @@ def clear_author_request(uid):
         else:
             print("No valid action specified")
 
-        with db.connect('db_path') as conn:
+        with db.connect(db_path) as conn:
             cursor = conn.cursor()
             cursor.execute("DELETE FROM author_requests WHERE uid = ?", (uid,))
             conn.commit()
             print("authorised")
 
         return redirect(url_for('admin'))
-
-        # with db.connect(db_path) as conn:
-        #     cursor = conn.cursor()
-        #     cursor.execute("SELECT * FROM users ORDER BY uid DESC")
-        #     users = cursor.fetchall()
-        #     cursor.execute("SELECT * FROM author_requests ORDER BY uid DESC")
-        #     author_requests = cursor.fetchall()
-
-        # return render_template('/admin-pages/dashboard.html', users=users, author_requests=author_requests, name=session.get('name'))
 
     print("GET request")
     return redirect(url_for('admin'))

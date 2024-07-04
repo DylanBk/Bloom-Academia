@@ -10,12 +10,16 @@
     <header>
         <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
         <nav>
-
-            <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}"> <!-- send form data to python to check if input exists in db -->
-                <input id="search-bar-input" type="text" name="search-bar-input" placeholder="Search for a course..."> <!-- search query -->
-                <button id="search-bar-btn" type="submit" name="search-bar-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32"><desc>Search Streamline Icon: https://streamlinehq.com</desc><path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path><path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path></svg></button> <!-- press to search -->
+            <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}">
+                <input id="search-bar-input" class="text-black" type="text" name="search-bar-input" placeholder="Search for a course...">
+                <button id="search-bar-btn" type="submit" name="search-bar-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32">
+                        <desc>Search Streamline Icon: https://streamlinehq.com</desc>
+                        <path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path>
+                        <path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path>
+                    </svg>
+                </button>
             </form>
-
             <a class="nav-item" href="{{ url_for('profile') }}">In Progress</a>
             <a class="nav-item" href="{{ url_for('list_courses') }}">Courses</a>
             {% if name %}
@@ -23,7 +27,6 @@
             {% else %}
                 <a class="nav-item" href="{{ 'login' }}">Login</a>
             {% endif %}
-
         </nav>
     </header>
 
@@ -42,5 +45,24 @@
 
         <button type="submit">Create User</button>
     </form>
+
+    <footer>
+        <li id="footer-l1" class="footer-item">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('about') }}">About Us</a>
+            <a href="{{ url_for('register') }}">Sign Up</a>
+            <a href="{{ url_for('login') }}">Login</a>
+        </li>
+        <li id="footer-l2" class="footer-item">
+            <a href="#">View All Courses</a>
+            <a href="{{ url_for('create_course') }}">Create a Course</a>
+            <a href="{{ url_for('profile') }}">Profile</a>
+            <a href="{{ url_for('profile') }}">My Courses</a>
+        </li>
+        <li id="footer-l4" class="footer-item">
+            <button id="tos-btn" onclick="showTOS()">Terms of Service</button>
+        </li>
+    </footer>
+
 </body>
 </html>

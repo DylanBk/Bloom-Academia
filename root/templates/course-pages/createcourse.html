@@ -9,25 +9,28 @@
 </head>
 <body>
 
-    <header>
-        <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
-        <nav>
-
-            <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}"> <!-- send form data to python to check if input exists in db -->
-                <input id="search-bar-input" type="text" name="search-bar-input" placeholder="Search for a course..."> <!-- search query -->
-                <button id="search-bar-btn" type="submit" name="search-bar-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32"><desc>Search Streamline Icon: https://streamlinehq.com</desc><path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path><path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path></svg></button> <!-- press to search -->
-            </form>
-
-            <a class="nav-item" href="{{ url_for('profile') }}">In Progress</a>
-            <a class="nav-item" href="{{ url_for('list_courses') }}">Courses</a>
-            {% if name %}
-                <a class="nav-item" href="{{ url_for('profile') }}">Account</a>
-            {% else %}
-                <a class="nav-item" href="{{ 'login' }}">Login</a>
-            {% endif %}
-
-        </nav>
-    </header>
+  <header>
+    <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
+    <nav>
+        <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}">
+            <input id="search-bar-input" class="text-black" type="text" name="search-bar-input" placeholder="Search for a course...">
+            <button id="search-bar-btn" type="submit" name="search-bar-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32">
+                    <desc>Search Streamline Icon: https://streamlinehq.com</desc>
+                    <path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path>
+                    <path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path>
+                </svg>
+            </button>
+        </form>
+        <a class="nav-item" href="{{ url_for('profile') }}">In Progress</a>
+        <a class="nav-item" href="{{ url_for('list_courses') }}">Courses</a>
+        {% if name %}
+            <a class="nav-item" href="{{ url_for('profile') }}">Account</a>
+        {% else %}
+            <a class="nav-item" href="{{ 'login' }}">Login</a>
+        {% endif %}
+    </nav>
+</header>
 
     <div class="min-h-screen bg-zinc-100 p-6 flex flex-col items-center">
         <h2 class="text-xl font-semibold text-zinc-800 mb-6">Create a New Course</h2>
@@ -54,7 +57,7 @@
             ></textarea>
           </div>
           <div class="mb-4">
-            <label class="block text-zinc-700 text-sm font-bold mb-2" for="course-image"> Course Image </label>
+            <label class="block text-zinc-700 text-sm font-bold mb-2" for="course-image"> Course Image (16:9 aspect ratio)</label>
             <input class="shadow appearance-none border rounded w-full py-2 px-3 text-zinc-700 leading-tight focus:outline-none focus:shadow-outline" id="course-img" name="course-img" type="file" accept="image/*" />
           </div>
           <div class="flex items-center justify-between">
@@ -62,5 +65,6 @@
           </div>
         </form>
       </div>
+
 </body>
 </html>

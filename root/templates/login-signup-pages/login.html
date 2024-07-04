@@ -2,54 +2,85 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script src="https://cdn.tailwindcss.com"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Login - Bloom Academia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#25487D',
+                        'primary-dark': '#1C3A6F',
+                        'secondary': '#006f9b',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-    <header>
-        <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
-        <nav>
-            <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}">
-                <input id="search-bar-input" type="text" name="search-bar-input" placeholder="Search for a course...">
-                <button id="search-bar-btn" type="submit" name="search-bar-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32">
-                        <path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path>
-                        <path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path>
-                    </svg>
-                </button>
+<header>
+    <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
+    <nav>
+        <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}">
+            <input id="search-bar-input" class="text-black" type="text" name="search-bar-input" placeholder="Search for a course...">
+            <button id="search-bar-btn" type="submit" name="search-bar-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32">
+                    <desc>Search Streamline Icon: https://streamlinehq.com</desc>
+                    <path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path>
+                    <path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path>
+                </svg>
+            </button>
+        </form>
+        <a class="nav-item" href="{{ url_for('profile') }}">In Progress</a>
+        <a class="nav-item" href="{{ url_for('list_courses') }}">Courses</a>
+        {% if name %}
+            <a class="nav-item" href="{{ url_for('profile') }}">Account</a>
+        {% else %}
+            <a class="nav-item" href="{{ 'login' }}">Login</a>
+        {% endif %}
+    </nav>
+</header>
+    <body class="bg-white min-h-screen flex flex-col">
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="max-w-md w-full space-y-8 bg-secondary p-10 rounded-xl shadow-2xl">
+            <div>
+                <h2 class="text-3xl font-bold text-center text-white mb-2">Account Login</h2>
+            </div>
+            <form class="mt-8 space-y-6" method="POST" action="{{ url_for('login') }}">
+                <input type="hidden" name="remember" value="true">
+                <div class="rounded-md shadow-sm -space-y-px">
+                    <div>
+                        <label for="email" class="sr-only">Email address</label>
+                        <input id="email" name="email" type="email" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm" placeholder="Email address">
+                    </div>
+                    <div>
+                        <label for="password" class="sr-only">Password</label>
+                        <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm" placeholder="Password">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors duration-300">
+                        Sign in
+                    </button>
+                </div>
             </form>
-            <a class="nav-item" href="{{ url_for('profile') }}">In Progress</a>
-            <a class="nav-item" href="{{ url_for('list_courses') }}">Courses</a>
-            {% if name %}
-                <a class="nav-item" href="{{ url_for('profile') }}">Account</a>
-            {% else %}
-                <a class="nav-item" href="{{ url_for('login') }}">Login</a>
-            {% endif %}
-        </nav>
-    </header>
-    <div class="container-d">
-       <!---- <div class="background-column">
-            <img src="{{ url_for('static', filename='images/login.jpg') }}?v=2" alt="Login Background">
-        </div> -->
-        <div class="form-column">
-            <h2 style="text-align: center; color: white;">Account Login</h2>
-            <form class="Login-content" method="POST" action="{{ url_for('login') }}">
-                <p id="login-error-msg"></p>
-                <label for="email" class="email-label">Email</label>
-                <input style="width: 350px; box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);" type="email" id="email" name="email" required> <br>
-                <label for="password" class="password-label">Password</label>
-                <input style="width: 350px; box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);" type="password" id="password" name="password" required>
-                <button id="login-btn" type="submit" value="login">Login</button>
-            </form>
-            <p id="switch-register-login">Don't have an account? <a href="{{ url_for('register') }}">Register here</a>.</p>
+            <div class="text-center">
+                <p class="text-sm text-neutral-200">
+                    Don't have an account? 
+                    <a href="{{ url_for('register') }}" class="font-medium text-white hover:underline">
+                        Register here
+                    </a>
+                </p>
+            </div>
             {% if message %}
-                <p style="color: red;">{{ message }}</p>
+                <p class="mt-2 text-center text-sm text-red-600">{{ message }}</p>
             {% endif %}
         </div>
-    </div>
-    <script src="{{ url_for('static', filename='js/login-button.js') }}"></script>
-    
+    </main>
+
+
 </body>
 </html>

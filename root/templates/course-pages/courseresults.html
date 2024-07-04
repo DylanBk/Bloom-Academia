@@ -10,12 +10,16 @@
     <header>
         <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
         <nav>
-
-            <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}"> <!-- send form data to python to check if input exists in db -->
-                <input id="search-bar-input" type="text" name="search-bar-input" placeholder="Search for a course..."> <!-- search query -->
-                <button id="search-bar-btn" type="submit" name="search-bar-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32"><desc>Search Streamline Icon: https://streamlinehq.com</desc><path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path><path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path></svg></button> <!-- press to search -->
+            <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}">
+                <input id="search-bar-input" class="text-black" type="text" name="search-bar-input" placeholder="Search for a course...">
+                <button id="search-bar-btn" type="submit" name="search-bar-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32">
+                        <desc>Search Streamline Icon: https://streamlinehq.com</desc>
+                        <path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path>
+                        <path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path>
+                    </svg>
+                </button>
             </form>
-
             <a class="nav-item" href="{{ url_for('profile') }}">In Progress</a>
             <a class="nav-item" href="{{ url_for('list_courses') }}">Courses</a>
             {% if name %}
@@ -23,19 +27,61 @@
             {% else %}
                 <a class="nav-item" href="{{ 'login' }}">Login</a>
             {% endif %}
-
         </nav>
     </header>
 
-    {% if courses %}
-        <h2>Course Found</h2>
-        {% for course in courses %}
-            <p>Name: {{ course[0] }}</p>
-            <p>Description: {{ course[1] }}</p>
-            <img class="course-image" src="data:image/jpeg;base64,{{ course[2] }}" alt="{{ course[0] }}">
-        {% endfor %}
-    {% elif message %}
-        <p>{{ message }}</p>
-    {% endif %}
+    <div id="main-wrapper">
+        {% if courses %}
+            <h2 class="mt-6 p-4 bg-green-100 text-green-700 rounded-lg items-center justify-center flex flex-col">Course Found</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 m-8">
+                {% for course in courses %}
+                    <div class=" bg-white rounded-lg shadow-md overflow-hidden transition transform hover:scale-105">
+                        <a class="block" href="{{ url_for('view_course', cid=course[3]) }}">
+                            {% if course[2] %}
+                                <img src="data:image/jpeg;base64,{{ course[2] }}" alt="{{ course[0] }}" class="w-full h-48 object-cover"/>
+                            {% else %}
+                                <div class="w-full h-48 bg-indigo-200 flex items-center justify-center">
+                                    <span class="text-indigo-600 font-semibold">No Image Available</span>
+                                </div>
+                            {% endif %}
+                            <div class="p-6">
+                                <h2 class="text-xl font-semibold mb-2 text-gray-800">{{ course[0] }}</h2>
+                                <p class="text-gray-600 mb-4">{{ course[1][:100] }}{% if course[1]|length > 100 %}...{% endif %}</p>
+                                <div class="flex space-x-2">
+                                    <form action="{{ url_for('join_course', cid=course[3]) }}" method="post">
+                                        <button type="submit" class="bg-indigo-600 text-white px-4 py-2 rounded-full hover:bg-indigo-700 transition">Join Course</button>
+                                    </form>
+                                    <form action="{{ url_for('leave_course', cid=course[3]) }}" method="post">
+                                        <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-full hover:bg-red-600 transition">Leave Course</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% elif message %}
+            <p>{{ message }}</p>
+        {% endif %}
+    </div>
+
+    <footer>
+        <li id="footer-l1" class="footer-item">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('about') }}">About Us</a>
+            <a href="{{ url_for('register') }}">Sign Up</a>
+            <a href="{{ url_for('login') }}">Login</a>
+        </li>
+        <li id="footer-l2" class="footer-item">
+            <a href="#">View All Courses</a>
+            <a href="{{ url_for('create_course') }}">Create a Course</a>
+            <a href="{{ url_for('profile') }}">Profile</a>
+            <a href="{{ url_for('profile') }}">My Courses</a>
+        </li>
+        <li id="footer-l4" class="footer-item">
+            <button id="tos-btn" onclick="showTOS()">Terms of Service</button>
+        </li>
+    </footer>
+
 </body>
 </html>

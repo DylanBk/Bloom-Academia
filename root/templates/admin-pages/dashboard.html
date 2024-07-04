@@ -1,79 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Manage Users</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <title>Manage Users - Bloom Academia</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#25487D',
+                        'primary-dark': '#1C3A6F',
+                        'secondary': '#006f9b',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
+<body class="bg-white min-h-screen flex flex-col">
     <header>
         <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
         <nav>
-
-            <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}"> <!-- send form data to python to check if input exists in db -->
-                <input id="search-bar-input" type="text" name="search-bar-input" placeholder="Search for a course..."> <!-- search query -->
-                <button id="search-bar-btn" type="submit" name="search-bar-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32"><desc>Search Streamline Icon: https://streamlinehq.com</desc><path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path><path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path></svg></button> <!-- press to search -->
+            <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}">
+                <input id="search-bar-input" class="text-black" type="text" name="search-bar-input" placeholder="Search for a course...">
+                <button id="search-bar-btn" type="submit" name="search-bar-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32">
+                        <desc>Search Streamline Icon: https://streamlinehq.com</desc>
+                        <path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path>
+                        <path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path>
+                    </svg>
+                </button>
             </form>
-
             <a class="nav-item" href="{{ url_for('profile') }}">In Progress</a>
             <a class="nav-item" href="{{ url_for('list_courses') }}">Courses</a>
             {% if name %}
                 <a class="nav-item" href="{{ url_for('profile') }}">Account</a>
             {% else %}
-                <a class="nav-item" href="{{ url_for('login') }}">Login</a>
+                <a class="nav-item" href="{{ 'login' }}">Login</a>
             {% endif %}
-
         </nav>
     </header>
-    <div class="flex-col items-center text-gray-800 min-h-screen p-8">
-        <h1 class="text-3xl font-bold mb-4 text-blue-500">Welcome, {{ name }}</h1>
-        <div class="max-w-full">
 
-            <div id="manage-users-container" class="flex direction-row items-start justify-evenly">
-                <div id="manage-users-col">
-                    <h2 class="text-2xl text-center font-semibold mb-4">User List</h2>
-                    {% for user in users %} 
-                    <div class="w-96 bg-white p-4 rounded-lg shadow-md mb-4 flex items-center">
+    <main class="flex-grow flex flex-col items-center justify-start p-8">
+        <h1 class="text-3xl font-bold mb-8 text-primary">Welcome, {{ name }}</h1>
+        <div class="w-full max-w-6xl">
+            <div id="manage-users-container" class="flex flex-col md:flex-row items-start justify-between space-y-8 md:space-y-0 md:space-x-8">
+                <div id="manage-users-col" class="w-full md:w-1/2 bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl text-center font-semibold mb-6 text-primary">User List</h2>
+                    {% for user in users %}
+                    <div class="bg-gray-50 p-4 rounded-lg shadow mb-4 flex items-center">
                         <div class="flex-grow mr-4">
-                            <p class="text-lg font-semibold">{{ user[1] }} ( <span class="{% if user[4] == 'Admin' %}
-                                role-admin
-                            {% elif user[4] == 'User' %}
-                                role-user
-                            {% elif user[4] == 'Author' %}
-                                role-author
-                            {% endif %} font-bold">{{ user[4] }}</span> )</p>
+                            <p class="text-lg font-semibold text-gray-800">{{ user[1] }} ( <span class="{% if user[4] == 'Admin' %}text-red-600{% elif user[4] == 'User' %}text-neutral-400{% elif user[4] == 'Author' %}text-blue-600{% endif %} font-bold">{{ user[4] }}</span> )</p>
                             <p class="text-sm text-gray-500">{{ user[2] }}</p>
-                            <p class="text-sm text--400 font-extrabold">{{ user[0] }}</p>
+                            <p class="text-sm text-gray-400 font-extrabold">{{ user[0] }}</p>
                         </div>
-                        <div>
-                            <a href="{{ url_for('change_role', uid=user[0]) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Edit</a>
-                            <a href="{{ url_for('delete_user', uid=user[0]) }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2">Delete</a>
+                        <div class="flex flex-col space-y-2">
+                            <a href="{{ url_for('change_role', uid=user[0]) }}" class="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded text-center">Edit</a>
+                            <a href="{{ url_for('delete_user', uid=user[0]) }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded text-center">Delete</a>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
 
-                <div id="manage-author-requests-col">
-                    <h2 class="text-2xl text-center font-semibold mb-4">Author Requests</h2>
+                <div id="manage-author-requests-col" class="w-full md:w-1/2 bg-white p-6 rounded-xl shadow-lg">
+                    <h2 class="text-2xl text-center font-semibold mb-6 text-primary">Author Requests</h2>
                     {% for request in author_requests %}
-                    <div class="bg-white p-4 rounded-lg shadow-md mb-4 flex items-center">
-                        <div class="flex-grow mr-4">
-                            <p class="text-lg font-semibold">{{ request[1] }}</p>
-                            <p>Specialty: <span class="text-m text-gray-500">{{ request[3] }}</span></p>
-                            <p class="text-m text-grey-500">Reason: {{ request[2] }}</p>
+                    <div class="bg-gray-50 p-4 rounded-lg shadow mb-4">
+                        <div class="mb-4">
+                            <p class="text-lg font-semibold text-gray-800">{{ request[1] }}</p>
+                            <p class="text-sm text-gray-600">Specialty: <span class="font-medium">{{ request[3] }}</span></p>
+                            <p class="text-sm text-gray-600">Reason: {{ request[2] }}</p>
                         </div>
-
-                        <form id="clear-author-request-form" action="{{ url_for('clear_author_request', uid=request[0]) }}" method="post">
-                            <p>{{ request[0] }}</p>
+                        <form id="clear-author-request-form" action="{{ url_for('clear_author_request', uid=request[0]) }}" method="post" class="flex justify-end space-x-2">
                             <input type="hidden" name="uid" value="{{ request[0] }}">
-                            <button id="accept-author-request" name="accept-author-request" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-2" type="submit">Accept</button>
-                            <button id="decline-author-request" name="decline-author-request" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded ml-2" type="submit">Decline</button>
+                            <button id="accept-author-request" name="accept-author-request" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" type="submit">Accept</button>
+                            <button id="decline-author-request" name="decline-author-request" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" type="submit">Decline</button>
                         </form>
+                    </div>
                     {% endfor %}
                 </div>
-            </div> <!-- end of #manage-users-container -->
-
+            </div>
         </div>
-    </div>
+    </main>
+
+    <footer>
+        <li id="footer-l1" class="footer-item">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('about') }}">About Us</a>
+            <a href="{{ url_for('register') }}">Sign Up</a>
+            <a href="{{ url_for('login') }}">Login</a>
+        </li>
+        <li id="footer-l2" class="footer-item">
+            <a href="#">View All Courses</a>
+            <a href="{{ url_for('create_course') }}">Create a Course</a>
+            <a href="{{ url_for('profile') }}">Profile</a>
+            <a href="{{ url_for('profile') }}">My Courses</a>
+        </li>
+        <li id="footer-l4" class="footer-item">
+            <button id="tos-btn" onclick="showTOS()">Terms of Service</button>
+        </li>
+    </footer>
 </body>
 </html>

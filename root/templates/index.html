@@ -13,7 +13,7 @@
         <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
         <nav>
             <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}">
-                <input id="search-bar-input" type="text" name="search-bar-input" placeholder="Search for a course...">
+                <input id="search-bar-input" class="text-black" type="text" name="search-bar-input" placeholder="Search for a course...">
                 <button id="search-bar-btn" type="submit" name="search-bar-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32">
                         <desc>Search Streamline Icon: https://streamlinehq.com</desc>
@@ -34,7 +34,7 @@
 
     <div id="main-wrapper">
         <div class="landing-text-container">
-            <div class="landing-text">BLOOM ACADEMIA; <br><span class="landing-text-2"> The newest and most refreshing way to learn content. <br><br> With our website, students can share their knowledge to help other students, bringing together a community of like-minded people who want to fast-track their education.</span></div>
+            <div class="landing-text">BLOOM ACADEMIA <br><span class="landing-text-2"> The newest and most refreshing way to learn content. <br><br> With our website, students can share their knowledge to help other students, bringing together a community of like-minded people who want to fast-track their education.</span></div>
         </div>
         <div class="landing-block-container">
             <div class="landing-block-1 landing-block">Intuitive <br> User Designed <br> Courses
@@ -110,11 +110,8 @@
         <li id="footer-l2" class="footer-item">
             <a href="#">View All Courses</a>
             <a href="{{ url_for('create_course') }}">Create a Course</a>
-        </li>
-        <li id="footer-l3" class="footer-item">
             <a href="{{ url_for('profile') }}">Profile</a>
             <a href="{{ url_for('profile') }}">My Courses</a>
-            <a href="{{ url_for('profile') }}">Settings</a>
         </li>
         <li id="footer-l4" class="footer-item">
             <button id="tos-btn" onclick="showTOS()">Terms of Service</button>
