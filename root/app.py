@@ -5,7 +5,7 @@ app = Flask(__name__)
 # Secret key for session management.
 app.secret_key = 'supersecretkey' 
 
-db_path = "././instance/users.db"
+db_path = "root/instance/users.db"
 
 # Allowed extensions for file uploads
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'jfif'}
@@ -121,20 +121,16 @@ def view_course(cid):
             name = session.get('name')
             course = db.get_course(conn, cid)
             tasks = db.get_tasks(conn, cid)
-            title, description, img_data, cid, uid = course
+            title, description, img_data, cid, author_id = course
+            course_creator = db.get_user_name(conn, author_id)  # New function to get user name
 
             if img_data:
                 img_base64 = base64.b64encode(img_data).decode('utf-8')
             else:
                 img_base64 = None
 
-            if session.get('role') in ["Author", "Admin"]:
-                isAuthor = True
-            else:
-                isAuthor = False
-
+            isAuthor = session.get('role') in ["Author", "Admin"]
             completed_tasks = db.get_completed_tasks(conn, user_id, cid)
-            completion_rate = db.calculate_completion_rate(conn, user_id, cid)
 
             return render_template('/course-pages/course.html',
                                    title=title,
@@ -144,38 +140,25 @@ def view_course(cid):
                                    tasks=tasks, 
                                    isAuthor=isAuthor, 
                                    name=name,
-                                   completed_tasks=completed_tasks,
-                                   completion_rate=completion_rate)
+                                   course_creator=course_creator,
+                                   completed_tasks=completed_tasks)
                                    
     except db.DatabaseError as db_err:
         return render_template('error.html', error_type="Database Error", error_title="Database Error", error_subtitle=str(db_err), name=name)
     except Exception as e:
         return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong.", error_subtitle=str(e), name=name)
 
-@app.route('/complete_task/<int:cid>/<int:tid>', methods=['POST'])
-def complete_task(cid, tid):
-    if not session:
-        return redirect(url_for('login'))
-    
-    user_id = session['user_id']
-    
-    try:
-        with db.connect(db_path) as conn:
-            db.mark_task_as_complete(conn, user_id, cid, tid)
-        return redirect(url_for('view_course', cid=cid))
-    except Exception as e:
-        return render_template('error.html', error_type="Internal Server Error", error_title="Sorry, something went wrong.", error_subtitle=str(e), name=session.get('name'))
-
 @app.route('/add_task/<int:cid>', methods=['POST'])
 def add_task(cid):
-    if not session:
+    if not session or session.get('role') not in ['Author', 'Admin']:
         return redirect(url_for('login'))
 
     task_title = request.form['task_title']
     task_description = request.form['task_description']
+    task_content = request.form['task_content']
 
     with db.connect(db_path) as conn:
-        db.add_task(conn, cid, task_title, task_description)
+        db.add_task(conn, cid, task_title, task_description, task_content)
 
     return redirect(url_for('view_course', cid=cid))
 
@@ -313,15 +296,6 @@ def register():
         password = request.form['password']
         name = request.form['name']
 
-        # code = ""
-        # for i in range(6):
-        #     num = random.randint(0,9)
-        #     code = code + num
-        # print(code)
-
-        # check = '' # only create user once verified
-        # if check:
-
         with db.connect(db_path) as conn:
             db.create_user(conn, name, email, password, role="User")
 
@@ -352,15 +326,35 @@ def get_profile_data():
 
     return name, email, role, updated_courses
 
-@app.route('/profile')
 @app.route('/settings')
+@app.route('/profile')
 def profile():
     if not session:
         return redirect(url_for('login'))
 
-    name, email, role, courses = get_profile_data()
+    user_id = session['user_id']
+    
+    with db.connect(db_path) as conn:
+        name, email, role = db.get_user_profile(conn, user_id)
+        courses = db.get_user_courses(conn, user_id)
 
-    return render_template('profile.html', name=name, email=email, role=role, courses=courses)
+        # Process courses and calculate completion rates
+        updated_courses = []
+        for course in courses:
+            title, description, img_data, cid = course
+            if img_data:
+                img_base64 = base64.b64encode(img_data).decode('utf-8')
+            else:
+                img_base64 = None
+            
+            # Calculate completion rate for this course
+            completion_rate = db.calculate_completion_rate(conn, user_id, cid)
+            
+            updated_courses.append((title, description, img_base64, cid, completion_rate))
+
+    return render_template('profile.html', name=name, email=email, role=role, courses=updated_courses)
+
+
 
 @app.route('/profile/changeusername', methods=['GET', 'POST'])
 @app.route('/settings/changeusername', methods=['GET', 'POST'])
@@ -561,6 +555,38 @@ def delete_user(uid):
         db.delete_user(conn, uid)
 
     return redirect(url_for('admin_dashboard'))
+
+@app.route('/courses/<int:cid>/tasks/<int:tid>', methods=['GET', 'POST'])
+def view_task(cid, tid):
+    if not session:
+        return redirect(url_for('login'))
+    
+    user_id = session['user_id']
+    
+    with db.connect(db_path) as conn:
+        task = db.get_task(conn, tid)
+        course = db.get_course(conn, cid)
+        is_completed = db.is_task_completed(conn, user_id, cid, tid)
+
+    if request.method == 'POST':
+        db.mark_task_as_complete(conn, user_id, cid, tid)
+        return redirect(url_for('view_course', cid=cid))
+
+    return render_template('course-pages/task.html', task=task, course=course, is_completed=is_completed, cid=cid, tid=tid)
+
+@app.route('/complete_task/<int:cid>/<int:tid>', methods=['POST'])
+def complete_task(cid, tid):
+    if not session:
+        return redirect(url_for('login'))
+    
+    return redirect(url_for('view_task', cid=cid, tid=tid))
+
+
+# --- EMAIL CODE ---
+
+
+
+
 
 # --- MAIN PROGRAM ---
 

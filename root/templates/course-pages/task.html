@@ -1,12 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Search Results</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ task[1] }} - {{ course[0] }}</title>
 </head>
-<body>
-
+<body class="bg-gray-100 font-sans">
     <header>
         <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
         <nav>
@@ -29,18 +30,33 @@
         </nav>
     </header>
 
-    {% if user %}
-        <h2>User Found</h2>
-        <p>Name: {{ user[1] }}</p>
-        <p>Email: {{ user[2] }}</p>
-        <p>Password: {{ user[3] }}</p>
-        <p>Role: {{ user[4] }}</p>
-        
-        <a href="{{ url_for('search_user') }}">Search Again</a>
-    {% elif message %}
-        <p>{{ message }}</p>
-        <a href="{{ url_for('search_user') }}">Search Again</a>
-    {% endif %}
+    <main class="container mx-auto px-4 py-8">
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="px-6 py-4">
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">{{ task[1] }}</h2>
+                <p class="text-gray-600 mb-4">{{ task[2] }}</p>
+                <div class="prose max-w-none">
+                    {{ task[3]|safe }}
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-8">
+            {% if is_completed %}
+                <p class="text-green-600 font-bold">You have completed this task!</p>
+            {% else %}
+                <form action="{{ url_for('view_task', cid=cid, tid=tid) }}" method="post">
+                    <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded">
+                        Mark as Complete
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+
+        <a href="{{ url_for('view_course', cid=cid) }}" class="inline-block mt-8 text-indigo-600 hover:text-indigo-800">
+            &larr; Back to Course
+        </a>
+    </main>
 
     <footer>
         <li id="footer-l1" class="footer-item">
@@ -59,6 +75,5 @@
             <button id="tos-btn" onclick="showTOS()">Terms of Service</button>
         </li>
     </footer>
-
 </body>
 </html>

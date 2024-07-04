@@ -15,14 +15,13 @@
         <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}">
             <input id="search-bar-input" class="text-black" type="text" name="search-bar-input" placeholder="Search for a course...">
             <button id="search-bar-btn" type="submit" name="search-bar-btn">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#333333" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32">
                     <desc>Search Streamline Icon: https://streamlinehq.com</desc>
                     <path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path>
                     <path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path>
                 </svg>
             </button>
         </form>
-        <a class="nav-item" href="{{ url_for('profile') }}">In Progress</a>
         <a class="nav-item" href="{{ url_for('list_courses') }}">Courses</a>
         {% if name %}
             <a class="nav-item" href="{{ url_for('profile') }}">Account</a>

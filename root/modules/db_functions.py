@@ -3,7 +3,7 @@ import bcrypt
 import os
 
 
-db_path = "././instance/users.db"
+db_path = "root/instance/users.db"
 
 # --- CONNECTION ---
 
@@ -103,15 +103,39 @@ def get_course(conn, cid):
     return c.fetchone()
 
 # --- TASK FUNCTIONS ---
-def add_task(conn, cid, task_title, task_description):
+def add_task(conn, cid, task_title, task_description, task_content):
     c = conn.cursor()
-    c.execute("INSERT INTO course_tasks (cid, task_title, task_description) VALUES (?, ?, ?)", (cid, task_title, task_description))
+    # Convert newlines to HTML line breaks
+    task_content_formatted = task_content.replace('\n', '<br>')
+    c.execute("INSERT INTO course_tasks (cid, task_title, task_description, task_content) VALUES (?, ?, ?, ?)", 
+              (cid, task_title, task_description, task_content_formatted))
     return c.lastrowid
 
 def remove_task(conn, cid, tid):
     c = conn.cursor()
-    c.execute("DELETE FROM course_tasks WHERE cid = ? AND tid = ?", (cid, tid))
-    return c.rowcount
+    
+    # Start a transaction
+    c.execute("BEGIN TRANSACTION")
+    
+    try:
+        # Remove the task from course_tasks
+        c.execute("DELETE FROM course_tasks WHERE cid = ? AND tid = ?", (cid, tid))
+        
+        # Remove related entries from completed_tasks
+        c.execute("DELETE FROM completed_tasks WHERE course_id = ? AND task_id = ?", (cid, tid))
+    
+        
+        # Commit the transaction if all operations were successful
+        conn.commit()
+        
+        print(f"Task {tid} removed from course {cid} and related tables")
+        return c.rowcount  # Returns the number of rows affected in the course_tasks table
+    
+    except sqlite3.Error as e:
+        # If any error occurs, roll back the changes
+        conn.rollback()
+        print(f"An error occurred: {e}")
+        return 0  # Indicate that no rows were affected due to error
 
 def get_tasks(conn, cid):
     c = conn.cursor()
@@ -123,6 +147,19 @@ def find_course(conn, cname):
     like_pattern = f"%{cname}%"
     c.execute("SELECT cname, description, course_image, cid FROM courses WHERE cname LIKE ?", (like_pattern,))
     return c.fetchall()
+
+def get_task(conn, tid):
+    c = conn.cursor()
+    c.execute("SELECT tid, task_title, task_description, task_content FROM course_tasks WHERE tid = ?", (tid,))
+    return c.fetchone()
+
+def is_task_completed(conn, user_id, course_id, task_id):
+    c = conn.cursor()
+    c.execute("""
+    SELECT COUNT(*) FROM completed_tasks
+    WHERE user_id = ? AND course_id = ? AND task_id = ?
+    """, (user_id, course_id, task_id))
+    return c.fetchone()[0] > 0
 
 def request_author(conn, uid, email, reason, area):
     c = conn.cursor()
@@ -162,6 +199,12 @@ def mark_task_as_complete(conn, user_id, course_id, task_id):
     VALUES (?, ?, ?)
     ''', (user_id, course_id, task_id))
     conn.commit()
+
+def get_user_name(conn, user_id):
+    c = conn.cursor()
+    c.execute("SELECT name FROM users WHERE uid = ?", (user_id,))
+    result = c.fetchone()
+    return result[0] if result else "Unknown"
 
 def get_completed_tasks(conn, user_id, course_id):
     c = conn.cursor()
@@ -224,7 +267,7 @@ def create():
         # -- COURSES -- (CREATE COURSES & COURSE_USERS TABLES)
         create_table(connection, "courses", ["cid INTEGER PRIMARY KEY AUTOINCREMENT", "cname TEXT", "description TEXT", "course_image BLOB", "uid INTEGER REFERENCES users(uid)"])
         create_table(connection, "course_users", ["cid INTEGER REFERENCES courses(cid)", "uid INTEGER REFERENCES users(uid)", "CUID INTEGER PRIMARY KEY AUTOINCREMENT"])
-        create_table(connection, "course_tasks", ["tid INTEGER PRIMARY KEY AUTOINCREMENT", "cid INTEGER REFERENCES courses(cid)", "task_title TEXT", "task_description TEXT", "completed INTEGER"])
+        create_table(connection, "course_tasks", ["tid INTEGER PRIMARY KEY AUTOINCREMENT", "cid INTEGER REFERENCES courses(cid)", "task_title TEXT", "task_description TEXT", "task_content TEXT", "completed INTEGER"])
         create_table(connection, "author_requests", ["uid INTEGER REFERENCES users(uid), email TEXT REFERENCES users(email), reason TEXT, area TEXT"])
         create_table(connection, "completed_tasks", ["id INTEGER PRIMARY KEY AUTOINCREMENT", "user_id INTEGER REFERENCES users(uid)", "course_id INTEGER REFERENCES courses(cid)", "task_id INTEGER REFERENCES course_tasks(tid)", "completed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP"])
         # -- FINISH --
