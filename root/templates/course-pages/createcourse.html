@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloom Academia | Upload Course</title>
+    <script src="{{ url_for('static', filename='/js/tos-button.js') }}" defer></script>
+</head>
+<body>
+
+  <header>
+    <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
+    <nav>
+        <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}">
+            <input id="search-bar-input" class="text-black" type="text" name="search-bar-input" placeholder="Search for a course...">
+            <button id="search-bar-btn" type="submit" name="search-bar-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#333333" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32">
+                    <desc>Search Streamline Icon: https://streamlinehq.com</desc>
+                    <path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path>
+                    <path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path>
+                </svg>
+            </button>
+        </form>
+        <a class="nav-item" href="{{ url_for('list_courses') }}">Courses</a>
+        {% if name %}
+            <a class="nav-item" href="{{ url_for('profile') }}">Account</a>
+        {% else %}
+            <a class="nav-item" href="{{ 'login' }}">Login</a>
+        {% endif %}
+    </nav>
+</header>
+
+    <div class="min-h-screen bg-zinc-100 p-6 flex flex-col items-center">
+        <h2 class="text-xl font-semibold text-zinc-800 mb-6">Create a New Course</h2>
+        <form class="w-full max-w-lg bg-white p-6 rounded-lg shadow-md" action="{{ url_for('create_course') }}" method="POST" enctype="multipart/form-data">
+          <div class="mb-4">
+            <label class="block text-zinc-700 text-sm font-bold mb-2" for="course-title"> Course Title </label>
+            <input
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-zinc-700 leading-tight focus:outline-none focus:shadow-outline"
+              id="course-title"
+              type="text"
+              maxlength="25"
+              name="course-title"
+              placeholder="Enter course title"
+            />
+          </div>
+          <div class="mb-4">
+            <label class="block text-zinc-700 text-sm font-bold mb-2" for="course-description"> Course Description </label>
+            <textarea
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-zinc-700 leading-tight focus:outline-none focus:shadow-outline"
+              id="course-description"
+              maxlength="100"
+              name="course-description"
+              placeholder="Enter course description"
+            ></textarea>
+          </div>
+          <div class="mb-4">
+            <label class="block text-zinc-700 text-sm font-bold mb-2" for="course-image"> Course Image (16:9 aspect ratio)</label>
+            <input class="shadow appearance-none border rounded w-full py-2 px-3 text-zinc-700 leading-tight focus:outline-none focus:shadow-outline" id="course-img" name="course-img" type="file" accept="image/*" />
+          </div>
+          <div class="flex items-center justify-between">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">Create Course</button>
+          </div>
+        </form>
+      </div>
+
+</body>
+</html>

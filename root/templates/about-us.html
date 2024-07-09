@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/style.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bloom Academia | About Us</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{{ url_for('static', filename='/js/tos-button.js') }}" defer></script>
+</head>
+<body>
+
+
+
+  <header>
+    <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
+    <nav>
+        <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}">
+            <input id="search-bar-input" class="text-black" type="text" name="search-bar-input" placeholder="Search for a course...">
+            <button id="search-bar-btn" type="submit" name="search-bar-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#333333" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32">
+                    <desc>Search Streamline Icon: https://streamlinehq.com</desc>
+                    <path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path>
+                    <path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path>
+                </svg>
+            </button>
+        </form>
+        <a class="nav-item" href="{{ url_for('list_courses') }}">Courses</a>
+        {% if name %}
+            <a class="nav-item" href="{{ url_for('profile') }}">Account</a>
+        {% else %}
+            <a class="nav-item" href="{{ 'login' }}">Login</a>
+        {% endif %}
+    </nav>
+</header>
+
+
+
+
+      <div class="relative isolate overflow-hidden bg-white px-6 py-24 sm:py-32 lg:overflow-visible lg:px-0">
+        <div class="absolute inset-0 -z-10 overflow-hidden">
+          <svg class="absolute left-[max(50%,25rem)] top-0 h-[64rem] w-[128rem] -translate-x-1/2 stroke-gray-200 [mask-image:radial-gradient(64rem_64rem_at_top,white,transparent)]" aria-hidden="true">
+            <defs>
+              <pattern id="e813992c-7d03-4cc4-a2bd-151760b470a0" width="200" height="200" x="50%" y="-1" patternUnits="userSpaceOnUse">
+                <path d="M100 200V.5M.5 .5H200" fill="none" />
+              </pattern>
+            </defs>
+            <svg x="50%" y="-1" class="overflow-visible fill-gray-50">
+              <path d="M-100.5 0h201v201h-201Z M699.5 0h201v201h-201Z M499.5 400h201v201h-201Z M-300.5 600h201v201h-201Z" stroke-width="0" />
+            </svg>
+            <rect width="100%" height="100%" stroke-width="0" fill="url(#e813992c-7d03-4cc4-a2bd-151760b470a0)" />
+          </svg>
+        </div>
+        <div class="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 lg:mx-0 lg:max-w-none lg:grid-cols-2 lg:items-start lg:gap-y-10">
+          <div class="lg:col-span-2 lg:col-start-1 lg:row-start-1 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
+            <div class="lg:pr-4">
+              <div class="lg:max-w-lg">
+                <p class="text-base font-semibold leading-7 text-indigo-600">Better learning</p>
+                <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">An innovative new way to learn.</h1>
+                <p class="mt-6 text-xl leading-8 text-gray-700">As students ourselves, we know of the challenges that come with finding reliable and affordable resources for studying and revision. The struggle to access quality educational materials can be a significant barrier to success, and we wanted to address this issue head-on. That's why we developed Bloom Academia—to serve as a central hub where learners can find a wealth of information and resources at their fingertips. Our platform is designed to support a collaborative learning environment. Users can contribute their knowledge, share study materials, participate in discussions, and help each other understand complex subjects. We believe that by fostering a sense of community and cooperation, we can make learning more effective and enjoyable for everyone.</p>
+              </div>
+            </div>
+          </div>
+          <div class="lg:col-span-2 lg:col-start-1 lg:row-start-2 lg:mx-auto lg:grid lg:w-full lg:max-w-7xl lg:grid-cols-2 lg:gap-x-8 lg:px-8">
+            <div class="lg:pr-4">
+              <div class="max-w-xl text-base leading-7 text-gray-700 lg:max-w-lg">
+                <p>At Bloom Academia, we are committed to ensuring that educational opportunities are available to all. We provide a wide range of resources, from study guides and tutorials to forums and interactive learning tools. Our goal is to empower students to achieve their academic potential and to cultivate a lifelong love of learning. In addition to providing access to educational content, Bloom Academia also emphasizes the importance of peer support and mentorship. We encourage experienced learners to mentor those who are just beginning their academic journeys, creating a supportive network that benefits everyone involved.</p>
+                <ul role="list" class="mt-8 space-y-8 text-gray-600">
+                  <li class="flex gap-x-3">
+                    <svg class="mt-1 h-5 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M5.5 17a4.5 4.5 0 01-1.44-8.765 4.5 4.5 0 018.302-3.046 3.5 3.5 0 014.504 4.272A4 4 0 0115 17H5.5zm3.75-2.75a.75.75 0 001.5 0V9.66l1.95 2.1a.75.75 0 101.1-1.02l-3.25-3.5a.75.75 0 00-1.1 0l-3.25 3.5a.75.75 0 101.1 1.02l1.95-2.1v4.59z" clip-rule="evenodd" />
+                    </svg>
+                    <span><strong class="font-semibold text-gray-900">Student-made.</strong> At Bloom Academia, our focus is students helping students. As students ourselves, we know how hard it is to learn, so we've tailored our website to the best of our ability to help you.</span>
+                  </li>
+                  <li class="flex gap-x-3">
+                    <svg class="mt-1 h-5 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path fill-rule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clip-rule="evenodd" />
+                    </svg>
+                    <span><strong class="font-semibold text-gray-900">Become an author.</strong> If you're interested in being part of a community of students that all help eachother, consider becoming an author and making courses for Bloom Academia.</span>
+                  </li>
+                  <li class="flex gap-x-3">
+                    <svg class="mt-1 h-5 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                      <path d="M4.632 3.533A2 2 0 016.577 2h6.846a2 2 0 011.945 1.533l1.976 8.234A3.489 3.489 0 0016 11.5H4c-.476 0-.93.095-1.344.267l1.976-8.234z" />
+                      <path fill-rule="evenodd" d="M4 13a2 2 0 100 4h12a2 2 0 100-4H4zm11.24 2a.75.75 0 01.75-.75H16a.75.75 0 01.75.75v.01a.75.75 0 01-.75.75h-.01a.75.75 0 01-.75-.75V15zm-2.25-.75a.75.75 0 00-.75.75v.01c0 .414.336.75.75.75H13a.75.75 0 00.75-.75V15a.75.75 0 00-.75-.75h-.01z" clip-rule="evenodd" />
+                    </svg>
+                    <span><strong class="font-semibold text-gray-900">Free learning.</strong> We know how expensive it is to be students, so we provide our courses free of cost.</span>
+                  </li>
+                </ul>
+                <p class="mt-8">Ultimately, Bloom Academia is more than just a website; it's a movement toward a more equitable and inclusive education system.</p>
+                <h2 class="mt-16 text-2xl font-bold tracking-tight text-gray-900">Struggle learning? No problem.</h2>
+                <p class="mt-6">We invite you to join us in our mission to democratise knowledge and make learning accessible to all. Together, we can build a brighter future where everyone has the opportunity to learn, grow, and succeed.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="bg-white py-24 sm:py-32">
+        <div class="mx-auto grid max-w-7xl gap-x-8 gap-y-20 px-6 lg:px-8 xl:grid-cols-3">
+          <div class="max-w-2xl">
+            <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">Meet the Developers.</h2>
+            <p class="mt-6 text-lg leading-8 text-gray-600">Meeting at Access Creative College for a Software Development Course, our project came from a tutor set project at the end of our first college year, bringing the team together for Bloom Academia.</p>
+          </div>
+          <ul role="list" class="grid gap-x-8 gap-y-12 sm:grid-cols-2 sm:gap-y-16 xl:col-span-2">
+            <li>
+              <div class="flex items-center gap-x-6">
+                <img class="h-16 w-16 rounded-full" src="https://lh3.googleusercontent.com/a/ACg8ocKkdarZs86zjY20cXvIDoRQWEYFA7-k7vfs8bDrE9CxVqx-RHjJ=s288-c-no" alt="">
+                <div>
+                  <h3 class="text-base font-semibold leading-7 tracking-tight text-gray-900">Jaden Ebbage-Renwick</h3>
+                  <p class="text-sm font-semibold leading-6 text-indigo-600">UI/UX Developer</p>
+                </div>
+              </div>
+            </li>
+            
+            <li>
+                <div class="flex items-center gap-x-6">
+                  <img class="h-16 w-16 rounded-full" src="https://lh3.googleusercontent.com/cm/AGPWSu90vzPRevCFbB7GIHKwFKfl9SZY8oa8FNFTgNg5uPWtyK4Cb4wFeD6XKF5cO2d7rBrFxA=s64-p-k-rw-no" alt="">
+                  <div>
+                    <h3 class="text-base font-semibold leading-7 tracking-tight text-gray-900">Dylan Bullock</h3>
+                    <p class="text-sm font-semibold leading-6 text-indigo-600">Back-end Developer, Project Manager</p>
+                  </div>
+                </div>
+              </li>
+
+              <li>
+                <div class="flex items-center gap-x-6">
+                  <img class="h-16 w-16 rounded-full" src="https://lh3.googleusercontent.com/a-/ALV-UjWKaHoO1xRA36nJxNzUNST13wb9Gffp9LAZ5VUWQLomK4n5l4VL=s64-p-k-rw-no" alt="">
+                  <div>
+                    <h3 class="text-base font-semibold leading-7 tracking-tight text-gray-900">Nasko Kyurkchiev</h3>
+                    <p class="text-sm font-semibold leading-6 text-indigo-600">Database Developer</p>
+                  </div>
+                </div>
+              </li>
+
+              <li>
+                <div class="flex items-center gap-x-6">
+                  <img class="h-16 w-16 rounded-full" src="https://lh3.googleusercontent.com/a/ACg8ocI5YYOtHOXZ-Wstl6dMO4j2lWKSBFhMe13HbvfnUUfReZz8Cw=s36-p-k-rw-no-mo" alt="">
+                  <div>
+                    <h3 class="text-base font-semibold leading-7 tracking-tight text-gray-900">Harry Rafter</h3>
+                    <p class="text-sm font-semibold leading-6 text-indigo-600">Front-end Developer</p>
+                  </div>
+                </div>
+              </li>
+            <!-- More people... -->
+          </ul>
+        </div>
+      </div>
+      <!---
+    <div id="main-wrapper">
+        <div class="about-site-container">
+            <div class="about-site-head"><h2>What is Bloom Academia?</h2></div>
+            <div class="about-site-body"><p>We believe that knowledge should be accessible to everyone, regardless of their background or financial situation. This belief inspired us to create Bloom Academia, a platform dedicated to the free exchange of knowledge. At Bloom Academia, we aim to build a community where people from all walks of life can come together to learn, share, and grow intellectually.
+                <br><br>As students ourselves, we know of the challenges that come with finding reliable and affordable resources for studying and revision. The struggle to access quality educational materials can be a significant barrier to success, and we wanted to address this issue head-on. That's why we developed Bloom Academia—to serve as a central hub where learners can find a wealth of information and resources at their fingertips. Our platform is designed to support a collaborative learning environment. Users can contribute their knowledge, share study materials, participate in discussions, and help each other understand complex subjects. We believe that by fostering a sense of community and cooperation, we can make learning more effective and enjoyable for everyone.
+                <br><br>At Bloom Academia, we are committed to ensuring that educational opportunities are available to all. We provide a wide range of resources, from study guides and tutorials to forums and interactive learning tools. Our goal is to empower students to achieve their academic potential and to cultivate a lifelong love of learning. In addition to providing access to educational content, Bloom Academia also emphasizes the importance of peer support and mentorship. We encourage experienced learners to mentor those who are just beginning their academic journeys, creating a supportive network that benefits everyone involved.
+                <br><br>Ultimately, Bloom Academia is more than just a website; it's a movement toward a more equitable and inclusive education system. We invite you to join us in our mission to democratize knowledge and make learning accessible to all. Together, we can build a brighter future where everyone has the opportunity to learn, grow, and succeed.</p></div>
+        </div>
+
+        <div class="about-site-container">
+            <div class="about-site-head"><h2>Want to create courses for other users?</h2></div>
+            <div class="about-site-body"><p>If you're interested in designing and uploading courses for other users, all you need to do is complete the form linked below and we will send you an email stating whether we think you're suitable or not. After you have uploaded a course, you may have to wait a while for it to be available on the site since we have to moderate the content.</p>
+                <a href="{{ url_for('apply_author') }}">Apply for Author</a>
+            </div>
+        </div>
+    </div>-->
+
+    <div id="tos-card-container-bg" class="darken-bg hidden">
+      <div id="tos-card-container">
+          <div id="tos-card" class="hidden">
+              <button id="close-tos-btn" onclick="hideTOS()">X</button>
+              <h2 id="tos-head" class="hidden">Terms of Service</h2>
+              <div id="tos-content" class="hidden">
+                  <h3>1. Acceptance of Terms</h3>
+                  <p>By accessing or using the Site, you acknowledge that you have read, understood, and agree to be bound by these Terms and our Privacy Policy. If you do not agree to these Terms, you must not use the Site.</p>
+                  <h3>2. Description of Services</h3>
+                  <p>Bloom Academia is an online platform that allows users to create and join educational courses. Users can request the "Author" role to create courses. All services provided by Bloom Academia are free of charge.</p>
+                  <h3>3. User Accounts</h3>
+                  <p>To create or join courses, you must register for an account on the Site. When you create an account, you agree to:</p>
+                  <ul>
+                      <li>Provide accurate, current, and complete information.</li>
+                      <li>Maintain and promptly update your account information to keep it accurate, current, and complete.</li>
+                      <li>Maintain the security of your account and password.</li>
+                      <li>Accept all risks of unauthorized access to your account and the information you provide.</li>
+                      <li>Notify us immediately of any unauthorized use of your account or any other breach of security.</li>
+                  </ul>
+                  <h3>4. Author Role</h3>
+                  <p>Users who wish to create courses must request the Author role. Bloom Academia reserves the right to approve or deny any request for the Author role at its sole discretion.</p>
+                  <h3>5. User Conduct</h3>
+                  <p>You agree not to use the Site to:</p>
+                  <ul>
+                      <li>Violate any applicable local, state, national, or international law.</li>
+                      <li>Infringe on the intellectual property rights of others.</li>
+                      <li>Transmit any content that is unlawful, harmful, threatening, abusive, harassing, defamatory, vulgar, obscene, or otherwise objectionable.</li>
+                      <li>Impersonate any person or entity, or falsely state or otherwise misrepresent your affiliation with a person or entity.</li>
+                      <li>Transmit any unsolicited or unauthorized advertising, promotional materials, junk mail, spam, chain letters, or any other form of solicitation.</li>
+                      <li>Transmit any material that contains software viruses or any other computer code, files, or programs designed to interrupt, destroy, or limit the functionality of any computer software or hardware or telecommunications equipment.</li>
+                  </ul>
+                  <h3>6. Content Ownership and Rights</h3>
+                  <p>You retain ownership of all content you submit to the Site. By submitting content to the Site, you grant Bloom Academia a worldwide, non-exclusive, royalty-free license to use, copy, reproduce, process, adapt, modify, publish, transmit, display, and distribute such content in any and all media or distribution methods now known or later developed.</p>
+                  <h3>7. Termination</h3>
+                  <p>Bloom Academia reserves the right to terminate or suspend your account and access to the Site at any time, without notice, for conduct that Bloom Academia believes violates these Terms or is harmful to other users of the Site, or for any other reason in its sole discretion.</p>
+                  <h3>8. Disclaimer of Warranties</h3>
+                  <p>The Site and all content, services, and features available through the Site are provided on an "as is" and "as available" basis without any warranties of any kind, either express or implied. Bloom Academia disclaims all warranties, express or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, title, and non-infringement.</p>
+                  <h3>9. Limitation of Liability</h3>
+                  <p>To the maximum extent permitted by law, Bloom Academia shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses, resulting from (i) your use of the Site; (ii) any unauthorized access to or use of our servers and/or any personal information stored therein; (iii) any interruption or cessation of transmission to or from the Site; (iv) any bugs, viruses, trojan horses, or the like that may be transmitted to or through the Site by any third party; or (v) any errors or omissions in any content or for any loss or damage incurred as a result of the use of any content posted, emailed, transmitted, or otherwise made available through the Site, whether based on warranty, contract, tort, or any other legal theory, and whether or not Bloom Academia has been advised of the possibility of such damages.</p>
+                  <h3>10. Changes to Terms</h3>
+                  <p>Bloom Academia reserves the right to modify these Terms at any time. Any changes will be effective immediately upon posting the revised Terms on the Site. Your continued use of the Site after the posting of the revised Terms constitutes your acceptance of the changes.</p>
+                  <h3>11. Governing Law</h3>
+                  <p>These Terms shall be governed by and construed in accordance with the laws of the state in which Bloom Academia is headquartered, without regard to its conflict of law principles.</p>
+                  <h3>12. Contact Information</h3>
+                  <p>If you have any questions about these Terms, please contact us at dylan.bullock.965@accesscreative.ac.uk.</p>
+                  <p>By using the Site, you acknowledge that you have read and understood these Terms of Service and agree to be bound by them. Thank you for using Bloom Academia!</p>
+              </div>
+          </div>
+      </div>
+  </div>
+
+    <footer>
+        <li id="footer-l1" class="footer-item">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('about') }}">About Us</a>
+            <a href="{{ url_for('register') }}">Sign Up</a>
+            <a href="{{ url_for('login') }}">Login</a>
+        </li>
+        <li id="footer-l2" class="footer-item">
+            <a href="#">View All Courses</a>
+            <a href="{{ url_for('create_course') }}">Create a Course</a>
+            <a href="{{ url_for('profile') }}">Profile</a>
+            <a href="{{ url_for('profile') }}">My Courses</a>
+        </li>
+        <li id="footer-l4" class="footer-item">
+            <button id="tos-btn" onclick="showTOS()">Terms of Service</button>
+        </li>
+    </footer>
+
+</body>
+</html>

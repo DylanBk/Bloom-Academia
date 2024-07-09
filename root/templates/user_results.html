@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bloom Academia | User Search Results</title>
+    <script src="{{ url_for('static', filename='/js/tos-button.js') }}" defer></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary': '#25487D',
+                        'primary-dark': '#1C3A6F',
+                        'secondary': '#006f9b',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <header>
+        <a href="{{ url_for('home') }}"><h1>Bloom Academia</h1></a>
+        <nav>
+            <form id="search-bar" class="nav-item" method="POST" action="{{ url_for('search_course') }}">
+                <input id="search-bar-input" class="text-black" type="text" name="search-bar-input" placeholder="Search for a course...">
+                <button id="search-bar-btn" type="submit" name="search-bar-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-1 -1 32 32" fill="none" stroke="#333333" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search" id="Search--Streamline-Feather" height="32" width="32">
+                        <desc>Search Streamline Icon: https://streamlinehq.com</desc>
+                        <path d="M3.59375 13.177083333333336a9.583333333333334 9.583333333333334 0 1 0 19.166666666666668 0 9.583333333333334 9.583333333333334 0 1 0 -19.166666666666668 0" stroke-width="2"></path>
+                        <path d="m25.15625 25.15625 -5.2109375 -5.2109375" stroke-width="2"></path>
+                    </svg>
+                </button>
+            </form>
+            <a class="nav-item" href="{{ url_for('list_courses') }}">Courses</a>
+            {% if name %}
+                <a class="nav-item" href="{{ url_for('profile') }}">Account</a>
+            {% else %}
+                <a class="nav-item" href="{{ 'login' }}">Login</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    <div id="main-wrapper">
+        {% if users %}
+            <h2 class="text-2xl text-center font-semibold mt-6 mb-6 text-primary">Search Results</h2>
+            <div id="user-card-container">
+                {% for user in users %}
+                    <div class="user-card">
+                        <p>User ID: {{ user[0] }}</p>
+                        <p>Name: {{ user[1] }}</p>
+                        <p>Email: {{ user[2] }}</p>
+                        <p>Role: <span class="{% if user[4] == 'Admin' %}text-red-600{% elif user[4] == 'User' %}text-neutral-400{% elif user[4] == 'Author' %}text-blue-600{% endif %} font-bold">{{ user[4] }}</span></p>
+                        <div class="flex flex-col space-y-2">
+                            <a href="{{ url_for('change_role', uid=user[0]) }}" class="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded text-center">Edit</a>
+                            <a href="{{ url_for('delete_user', uid=user[0]) }}" class="btn-bottom bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded text-center">Delete</a>
+                        </div>
+                    </div>
+                {% endfor %}
+                <a href="{{ url_for('search_user') }}" class="w-fit text-secondary hover:underline">Search Again</a>
+            </div>
+        {% elif message %}
+            <p class="mt-6 p-4 bg-red-100 rounded-lg items-center justify-center flex flex-col">{{ message }}</p>
+            <a href="{{ url_for('list_courses') }}" class="text-blue-500 text-center text-secondary hover:underline">Search Again</a>
+        {% endif %}
+    </div>
+
+    <div id="tos-card-container-bg" class="darken-bg hidden">
+        <div id="tos-card-container">
+            <div id="tos-card" class="hidden">
+                <button id="close-tos-btn" onclick="hideTOS()">X</button>
+                <h2 id="tos-head" class="hidden">Terms of Service</h2>
+                <div id="tos-content" class="hidden">
+                    <h3>1. Acceptance of Terms</h3>
+                    <p>By accessing or using the Site, you acknowledge that you have read, understood, and agree to be bound by these Terms and our Privacy Policy. If you do not agree to these Terms, you must not use the Site.</p>
+                    <h3>2. Description of Services</h3>
+                    <p>Bloom Academia is an online platform that allows users to create and join educational courses. Users can request the "Author" role to create courses. All services provided by Bloom Academia are free of charge.</p>
+                    <h3>3. User Accounts</h3>
+                    <p>To create or join courses, you must register for an account on the Site. When you create an account, you agree to:</p>
+                    <ul>
+                        <li>Provide accurate, current, and complete information.</li>
+                        <li>Maintain and promptly update your account information to keep it accurate, current, and complete.</li>
+                        <li>Maintain the security of your account and password.</li>
+                        <li>Accept all risks of unauthorized access to your account and the information you provide.</li>
+                        <li>Notify us immediately of any unauthorized use of your account or any other breach of security.</li>
+                    </ul>
+                    <h3>4. Author Role</h3>
+                    <p>Users who wish to create courses must request the Author role. Bloom Academia reserves the right to approve or deny any request for the Author role at its sole discretion.</p>
+                    <h3>5. User Conduct</h3>
+                    <p>You agree not to use the Site to:</p>
+                    <ul>
+                        <li>Violate any applicable local, state, national, or international law.</li>
+                        <li>Infringe on the intellectual property rights of others.</li>
+                        <li>Transmit any content that is unlawful, harmful, threatening, abusive, harassing, defamatory, vulgar, obscene, or otherwise objectionable.</li>
+                        <li>Impersonate any person or entity, or falsely state or otherwise misrepresent your affiliation with a person or entity.</li>
+                        <li>Transmit any unsolicited or unauthorized advertising, promotional materials, junk mail, spam, chain letters, or any other form of solicitation.</li>
+                        <li>Transmit any material that contains software viruses or any other computer code, files, or programs designed to interrupt, destroy, or limit the functionality of any computer software or hardware or telecommunications equipment.</li>
+                    </ul>
+                    <h3>6. Content Ownership and Rights</h3>
+                    <p>You retain ownership of all content you submit to the Site. By submitting content to the Site, you grant Bloom Academia a worldwide, non-exclusive, royalty-free license to use, copy, reproduce, process, adapt, modify, publish, transmit, display, and distribute such content in any and all media or distribution methods now known or later developed.</p>
+                    <h3>7. Termination</h3>
+                    <p>Bloom Academia reserves the right to terminate or suspend your account and access to the Site at any time, without notice, for conduct that Bloom Academia believes violates these Terms or is harmful to other users of the Site, or for any other reason in its sole discretion.</p>
+                    <h3>8. Disclaimer of Warranties</h3>
+                    <p>The Site and all content, services, and features available through the Site are provided on an "as is" and "as available" basis without any warranties of any kind, either express or implied. Bloom Academia disclaims all warranties, express or implied, including, but not limited to, implied warranties of merchantability, fitness for a particular purpose, title, and non-infringement.</p>
+                    <h3>9. Limitation of Liability</h3>
+                    <p>To the maximum extent permitted by law, Bloom Academia shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenues, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses, resulting from (i) your use of the Site; (ii) any unauthorized access to or use of our servers and/or any personal information stored therein; (iii) any interruption or cessation of transmission to or from the Site; (iv) any bugs, viruses, trojan horses, or the like that may be transmitted to or through the Site by any third party; or (v) any errors or omissions in any content or for any loss or damage incurred as a result of the use of any content posted, emailed, transmitted, or otherwise made available through the Site, whether based on warranty, contract, tort, or any other legal theory, and whether or not Bloom Academia has been advised of the possibility of such damages.</p>
+                    <h3>10. Changes to Terms</h3>
+                    <p>Bloom Academia reserves the right to modify these Terms at any time. Any changes will be effective immediately upon posting the revised Terms on the Site. Your continued use of the Site after the posting of the revised Terms constitutes your acceptance of the changes.</p>
+                    <h3>11. Governing Law</h3>
+                    <p>These Terms shall be governed by and construed in accordance with the laws of the state in which Bloom Academia is headquartered, without regard to its conflict of law principles.</p>
+                    <h3>12. Contact Information</h3>
+                    <p>If you have any questions about these Terms, please contact us at dylan.bullock.965@accesscreative.ac.uk.</p>
+                    <p>By using the Site, you acknowledge that you have read and understood these Terms of Service and agree to be bound by them. Thank you for using Bloom Academia!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="w-full fixed bottom-0">
+        <li id="footer-l1" class="footer-item">
+            <a href="{{ url_for('home') }}">Home</a>
+            <a href="{{ url_for('about') }}">About Us</a>
+            <a href="{{ url_for('register') }}">Sign Up</a>
+            <a href="{{ url_for('login') }}">Login</a>
+        </li>
+        <li id="footer-l2" class="footer-item">
+            <a href="#">View All Courses</a>
+            <a href="{{ url_for('create_course') }}">Create a Course</a>
+            <a href="{{ url_for('profile') }}">Profile</a>
+            <a href="{{ url_for('profile') }}">My Courses</a>
+        </li>
+        <li id="footer-l4" class="footer-item">
+            <button id="tos-btn" onclick="showTOS()">Terms of Service</button>
+        </li>
+    </footer>
+
+</body>
+</html>
